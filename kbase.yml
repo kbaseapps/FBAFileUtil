@@ -2,7 +2,7 @@ module-name:
     FBAFileUtil
 
 module-description:
-    A KBase module
+    Set of utility functions for FBA related data.
 
 service-language:
     perl
@@ -11,5 +11,5 @@ module-version:
     0.0.1
 
 owners:
-    [msneddon]
+    [chenry, msneddon]
 
