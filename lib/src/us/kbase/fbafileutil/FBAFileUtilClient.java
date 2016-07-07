@@ -334,6 +334,23 @@ public class FBAFileUtilClient {
     }
 
     /**
+     * <p>Original spec-file function name: media_to_excel_file</p>
+     * <pre>
+     * </pre>
+     * @param   media   instance of type {@link us.kbase.fbafileutil.MediaObjectSelection MediaObjectSelection}
+     * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public us.kbase.fbafileutil.File mediaToExcelFile(MediaObjectSelection media, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(media);
+        TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
+        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.media_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
      * <p>Original spec-file function name: tsv_file_to_phenotype_set</p>
      * <pre>
      * </pre>

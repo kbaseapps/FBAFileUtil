@@ -180,6 +180,18 @@ class FBAFileUtil(object):
             'FBAFileUtil.media_to_tsv_file',
             [media], self._service_ver, context)
 
+    def media_to_excel_file(self, media, context=None):
+        """
+        :param media: instance of type "MediaObjectSelection" -> structure:
+           parameter "workspace_name" of String, parameter "media_name" of
+           String
+        :returns: instance of type "File" -> structure: parameter "path" of
+           String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.media_to_excel_file',
+            [media], self._service_ver, context)
+
     def tsv_file_to_phenotype_set(self, p, context=None):
         """
         :param p: instance of type "PhenotypeCreationParams" (******

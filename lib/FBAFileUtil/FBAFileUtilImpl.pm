@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org 
 our $VERSION = "0.0.1";
 our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
-our $GIT_COMMIT_HASH = "1a0965f8645fcec91d3282d9eae743a7fda301b5";
+our $GIT_COMMIT_HASH = "8bec7e3c0c996686f5e76aceea0ac1bbf1c43431";
 
 =head1 NAME
 
@@ -845,7 +845,6 @@ sub model_to_tsv_file
             $files->{reactions_file} = { path => $output_dir . '/' . $f };
         }
     }
-    print Dumper($files).'\n';
 
     #END model_to_tsv_file
     my @_bad_returns;
@@ -1081,6 +1080,26 @@ sub tsv_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_media
+
+    # setup output scripts to call
+    my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_TSV_Media_to_KBaseBiochem_Media.pl';
+
+    my @uploadArgs = ("perl", $uploadScript,
+                    '--input_file_name', $p->{'media_file'}->{'path'},
+                    '--object_name', $p->{'media_name'},
+                    '--workspace_name', $p->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'},
+                    '--fba_service_url', 'impl');
+
+    print("Running: @uploadArgs \n");
+    my $ret = system(@uploadArgs);
+    check_system_call($ret);
+
+    # get WS info so we can determine the ws reference to return
+    my $ref = $self->get_ws_obj_ref($p->{'workspace_name'}, $p->{'media_name'});
+    $return = { ref => $ref };
+    print("Saved new Media to: $ref\n");
+
     #END tsv_file_to_media
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
@@ -1163,6 +1182,35 @@ sub excel_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN excel_file_to_media
+
+    # setup output scripts to call
+    my $excelValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_Excel_Media.pl';
+    #my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_Excel_Media_to_KBaseBiochem_Media.pl';
+    # Needed to patch because $fbaurl and $wsurl parameters were not read in properly
+    my $uploadScript = '/kb/module/lib/PATCH_trns_transform_Excel_Media_to_KBaseBiochem_Media.pl';
+
+    # validate
+    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    print("Running: @vArgs \n");
+    my $vRet = system(@vArgs);
+    check_system_call($vRet);
+
+    my @uploadArgs = ("perl", $uploadScript,
+                    '--input_file_name', $p->{'media_file'}->{'path'},
+                    '--object_name', $p->{'media_name'},
+                    '--workspace_name', $p->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'},
+                    '--fba_service_url', 'impl');
+
+    print("Running: @uploadArgs \n");
+    my $ret = system(@uploadArgs);
+    check_system_call($ret);
+
+    # get WS info so we can determine the ws reference to return
+    my $ref = $self->get_ws_obj_ref($p->{'workspace_name'}, $p->{'media_name'});
+    $return = { ref => $ref };
+    print("Saved new Media to: $ref\n");
+
     #END excel_file_to_media
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
@@ -1239,6 +1287,28 @@ sub media_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN media_to_tsv_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseBiochem_Media_to_TSV_Media.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $media->{'media_name'},
+                    '--workspace_name', $media->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
     #END media_to_tsv_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -1246,6 +1316,104 @@ sub media_to_tsv_file
 	my $msg = "Invalid returns passed to media_to_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
 							       method_name => 'media_to_tsv_file');
+    }
+    return($f);
+}
+
+
+
+
+=head2 media_to_excel_file
+
+  $f = $obj->media_to_excel_file($media)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$media is a FBAFileUtil.MediaObjectSelection
+$f is a FBAFileUtil.File
+MediaObjectSelection is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	media_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$media is a FBAFileUtil.MediaObjectSelection
+$f is a FBAFileUtil.File
+MediaObjectSelection is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	media_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub media_to_excel_file
+{
+    my $self = shift;
+    my($media) = @_;
+
+    my @_bad_arguments;
+    (ref($media) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"media\" (value was \"$media\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to media_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'media_to_excel_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($f);
+    #BEGIN media_to_excel_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseBiochem_Media_to_Excel_Media.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $media->{'media_name'},
+                    '--workspace_name', $media->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
+    #END media_to_excel_file
+    my @_bad_returns;
+    (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to media_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'media_to_excel_file');
     }
     return($f);
 }

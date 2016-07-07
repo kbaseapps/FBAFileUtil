@@ -1175,6 +1175,98 @@ File is a reference to a hash where the following keys are defined:
  
 
 
+=head2 media_to_excel_file
+
+  $f = $obj->media_to_excel_file($media)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$media is a FBAFileUtil.MediaObjectSelection
+$f is a FBAFileUtil.File
+MediaObjectSelection is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	media_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$media is a FBAFileUtil.MediaObjectSelection
+$f is a FBAFileUtil.File
+MediaObjectSelection is a reference to a hash where the following keys are defined:
+	workspace_name has a value which is a string
+	media_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub media_to_excel_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function media_to_excel_file (received $n, expecting 1)");
+    }
+    {
+	my($media) = @args;
+
+	my @_bad_arguments;
+        (ref($media) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"media\" (value was \"$media\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to media_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'media_to_excel_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.media_to_excel_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'media_to_excel_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method media_to_excel_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'media_to_excel_file',
+				       );
+    }
+}
+ 
+
+
 =head2 tsv_file_to_phenotype_set
 
   $return = $obj->tsv_file_to_phenotype_set($p)

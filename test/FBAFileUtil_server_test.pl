@@ -71,7 +71,7 @@ sub test_model_import_export {
                         model_name=>$info->[1], 
                         workspace_name=>$info->[7]
                     });
-    print('Got tsv file: '.$ret->{path}."\n");
+    print('Got tsv file: '.Dumper($ret->{path})."\n");
 
 
     # Test To and From SBML File
@@ -92,13 +92,51 @@ sub test_model_import_export {
 }
 
 
+sub test_media_import_export {
+
+    # Prepare test objects in workspace if needed using 
+    # $ws_client->save_objects({workspace => get_ws_name(), objects => []});
+    #
+    
+    # Model to/from Excel file
+    my $retObj = $impl->excel_file_to_media({
+                        media_name=>'excel_test_media', 
+                        workspace_name=>get_ws_name(),
+                        media_file=>{path=>'/kb/module/test/data/media_example.xlsx'}
+                    });
+    print('New Media Ref: '.$retObj->{'ref'}."\n");
+
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->media_to_excel_file({
+                        media_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got excel file: '.$ret->{path}."\n");
+
+    # Model to/from TSV file
+    my $retObj = $impl->tsv_file_to_media({
+                        media_name=>'excel_test_media', 
+                        workspace_name=>get_ws_name(),
+                        media_file=>{path=>'/kb/module/test/data/media_example.txt'}
+                    });
+    print('New Media Ref: '.$retObj->{'ref'}."\n");
+
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->media_to_tsv_file({
+                        media_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got tsv file: '.$ret->{path}."\n");
+}
+
+
 
 
 
 #######  actually run the tests here
 eval {
     test_model_import_export();
-    #test_media_import_export();
+    test_media_import_export();
 
 };
 my $err = undef;
