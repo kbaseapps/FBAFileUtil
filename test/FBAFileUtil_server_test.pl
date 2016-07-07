@@ -28,26 +28,77 @@ sub get_ws_name {
     return $ws_name;
 }
 
-eval {
+sub test_model_import_export {
+
     # Prepare test objects in workspace if needed using 
     # $ws_client->save_objects({workspace => get_ws_name(), objects => []});
     #
 
     
-    # Test To and From SBML File
-    my $retObj = $impl->sbml_file_to_model({
-                        model_name=>'test_Rhodobacter.fbamdl', 
+    # Model to/from Excel file
+    my $retObj = $impl->excel_file_to_model({
+                        model_name=>'excel_test_Rhodobacter.fbamdl', 
                         workspace_name=>get_ws_name(),
-                        model_file=>{path=>'/kb/module/test/data/test-sbml.xml'}
+                        model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xls'}
                     });
     print('New Model Ref: '.$retObj->{'ref'}."\n");
-    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $retObj = $impl->excel_file_to_model({
+                        model_name=>'excel_test_Rhodobacter.fbamdl', 
+                        workspace_name=>get_ws_name(),
+                        model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xlsx'}
+                    });
+    print('New Model Ref: '.$retObj->{'ref'}."\n");
 
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->model_to_excel_file({
+                        model_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got excel file: '.$ret->{path}."\n");
+
+
+    # Model to/from TSV file
+    my $retObj = $impl->tsv_file_to_model({
+                        model_name=>'tsv_test_Rhodobacter.fbamdl', 
+                        workspace_name=>get_ws_name(),
+                        model_file=>{path=>'/kb/module/test/data/Reactions.txt'},
+                        compounds_file=>{path=>'/kb/module/test/data/compounds.txt'}
+                    });
+    print('New Model Ref: '.$retObj->{'ref'}."\n");
+
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->model_to_tsv_file({
+                        model_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got tsv file: '.$ret->{path}."\n");
+
+
+    # Test To and From SBML File
+    my $retObj = $impl->sbml_file_to_model({
+                        model_name=>'sbml_test_Rhodobacter.fbamdl', 
+                        workspace_name=>get_ws_name(),
+                        model_file=>{path=>'/kb/module/test/data/test-sbml.xml'},
+                        compounds_file=>{path=>'/kb/module/test/data/compounds.txt'}
+                    });
+    print('New Model Ref: '.$retObj->{'ref'}."\n");
+
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
     my $ret = $impl->model_to_sbml_file({
                         model_name=>$info->[1], 
                         workspace_name=>$info->[7]
                     });
     print('Got file: '.$ret->{path}."\n");
+}
+
+
+
+
+
+#######  actually run the tests here
+eval {
+    test_model_import_export();
+    #test_media_import_export();
 
 };
 my $err = undef;

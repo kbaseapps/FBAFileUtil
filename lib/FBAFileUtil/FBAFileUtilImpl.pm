@@ -4,8 +4,8 @@ use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
 # http://semver.org 
 our $VERSION = "0.0.1";
-our $GIT_URL = "";
-our $GIT_COMMIT_HASH = "";
+our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
+our $GIT_COMMIT_HASH = "1a0965f8645fcec91d3282d9eae743a7fda301b5";
 
 =head1 NAME
 
@@ -81,6 +81,7 @@ sub get_result_files
     foreach $file (@files) {
         next if $file eq '.' or $file eq '..';
         push @filtered_files, $file;
+        print("  -> generated file: $file\n");
     }
     return @filtered_files;
 }
@@ -152,6 +153,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -169,6 +173,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -203,6 +210,50 @@ sub excel_file_to_model
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN excel_file_to_model
+
+    # setup output scripts to call
+    my $excelValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_Excel_FBAModel.pl';
+    #my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_Excel_FBAModel_to_KBaseFBA_FBAModel.pl';
+    # Needed to patch because $fbaurl and $wsurl parameters were not read in properly
+    my $uploadScript = '/kb/module/lib/PATCH_trns_transform_Excel_FBAModel_to_KBaseFBA_FBAModel.pl';
+
+    # validate
+    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    print("Running: @vArgs \n");
+    my $vRet = system(@vArgs);
+    check_system_call($vRet);
+
+    ### could pull out this logic into separate function:
+    my @uploadArgs = ("perl", $uploadScript,
+                    '--input_file_name', $p->{'model_file'}->{'path'},
+                    '--object_name', $p->{'model_name'},
+                    '--workspace_name', $p->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'},
+                    '--fba_service_url', 'impl');
+
+    if(exists $p->{'genome'}) {
+        push @uploadArgs, '--genome';
+        push @uploadArgs, $p->{'genome'};
+    }
+    if(exists $p->{'biomass'}) {
+        push @uploadArgs, '--biomass';
+        push @uploadArgs, $p->{'biomass'};
+    }
+    # No compounds file allowed for excel files; data is in excel file
+    #if(exists $p->{'compounds_file'}) {
+    #    push @uploadArgs, '--compounds';
+    #    push @uploadArgs, $p->{'compounds_file'}->{'path'};
+    #}
+                    
+    print("Running: @uploadArgs \n");
+    my $ret = system(@uploadArgs);
+    check_system_call($ret);
+
+    # get WS info so we can determine the ws reference to return
+    my $ref = $self->get_ws_obj_ref($p->{'workspace_name'}, $p->{'model_name'});
+    $return = { ref => $ref };
+    print("Saved new FBA Model to: $ref\n");
+
     #END excel_file_to_model
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
@@ -234,6 +285,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -251,6 +305,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -286,13 +343,13 @@ sub sbml_file_to_model
     my($return);
     #BEGIN sbml_file_to_model
 
-    # setup output directory and script call
-    my $working_dir = $self->set_working_dir();
+    # setup output scripts to call
     my $sbmlValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_SBML_FBAModel.py';
     my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_SBML_FBAModel_to_KBaseFBA_FBAModel.pl';
 
 
     # Skip SBML Validation - some missing dependencies exist here... need to install libsbml and install validate to 
+    #my $working_dir = $self->set_working_dir();
     #my @vArgs = ("python", $sbmlValidateScript,
     #                '--input_file_name', $p->{'model_file'}->{'path'},
     #                '--working_directory', $working_dir);
@@ -310,6 +367,7 @@ sub sbml_file_to_model
 #       "workspace_service_url=s" => \$wsurl,
 #       "fba_service_url=s" => \$fbaurl,
 
+    ### could pull out this logic into separate function:
     my @uploadArgs = ("perl", $uploadScript,
                     '--input_file_name', $p->{'model_file'}->{'path'},
                     '--object_name', $p->{'model_name'},
@@ -317,11 +375,18 @@ sub sbml_file_to_model
                     '--workspace_service_url', $self->{'workspace-url'},
                     '--fba_service_url', 'impl');
 
-    #                '--genome', $model->{'genome'},
-    #                '--biomass', $model->{'biomass'},
-    #                '--compounds', $model->{'compounds_file'}->{'path'},
-                    
-                    #'--input_file_name', $model->{'input_file'}->{'path'},
+    if(exists $p->{'genome'}) {
+        push @uploadArgs, '--genome';
+        push @uploadArgs, $p->{'genome'};
+    }
+    if(exists $p->{'biomass'}) {
+        push @uploadArgs, '--biomass';
+        push @uploadArgs, $p->{'biomass'};
+    }
+    if(exists $p->{'compounds_file'}) {
+        push @uploadArgs, '--compounds';
+        push @uploadArgs, $p->{'compounds_file'}->{'path'};
+    }
                     
     print("Running: @uploadArgs \n");
     my $ret = system(@uploadArgs);
@@ -363,6 +428,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -380,6 +448,9 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	model_file has a value which is a FBAFileUtil.File
 	model_name has a value which is a string
 	workspace_name has a value which is a string
+	genome has a value which is a string
+	biomass has a value which is a reference to a list where each element is a string
+	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
@@ -414,6 +485,49 @@ sub tsv_file_to_model
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_model
+
+    # setup output scripts to call
+    my $tsvValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_TSV_FBAModel.pl';
+    #my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_Excel_FBAModel_to_KBaseFBA_FBAModel.pl';
+    # Needed to patch because $fbaurl and $wsurl parameters were not read in properly
+    my $uploadScript = '/kb/module/lib/PATCH_trns_transform_TSV_FBAModel_to_KBaseFBA_FBAModel.pl';
+
+    # validate
+    my @vArgs = ("perl", $tsvValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    print("Running: @vArgs \n");
+    my $vRet = system(@vArgs);
+    check_system_call($vRet);
+
+    ### could pull out this logic into separate function:
+    my @uploadArgs = ("perl", $uploadScript,
+                    '--input_file_name', $p->{'model_file'}->{'path'},
+                    '--object_name', $p->{'model_name'},
+                    '--workspace_name', $p->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'},
+                    '--fba_service_url', 'impl');
+
+    if(exists $p->{'genome'}) {
+        push @uploadArgs, '--genome';
+        push @uploadArgs, $p->{'genome'};
+    }
+    if(exists $p->{'biomass'}) {
+        push @uploadArgs, '--biomass';
+        push @uploadArgs, $p->{'biomass'};
+    }
+    if(exists $p->{'compounds_file'}) {
+        push @uploadArgs, '--compounds';
+        push @uploadArgs, $p->{'compounds_file'}->{'path'};
+    }
+                    
+    print("Running: @uploadArgs \n");
+    my $ret = system(@uploadArgs);
+    check_system_call($ret);
+
+    # get WS info so we can determine the ws reference to return
+    my $ref = $self->get_ws_obj_ref($p->{'workspace_name'}, $p->{'model_name'});
+    $return = { ref => $ref };
+    print("Saved new FBA Model to: $ref\n");
+
     #END tsv_file_to_model
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
@@ -439,9 +553,9 @@ sub tsv_file_to_model
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ObjectSelection
+$model is a FBAFileUtil.ModelObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -453,9 +567,9 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ObjectSelection
+$model is a FBAFileUtil.ModelObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -490,6 +604,31 @@ sub model_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN model_to_excel_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseFBA_FBAModel_to_Excel_FBAModel.pl';
+
+    # [object_name=s', 'workspace object name from which the input is to be read'],
+    # ['workspace_name=s', 'workspace name from which the input is to be read'],
+    # ['workspace_service_url=s', 'workspace service url to pull from']
+    my @args = ("perl", $script, 
+                    '--object_name', $model->{'model_name'},
+                    '--workspace_name', $model->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
     #END model_to_excel_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -515,9 +654,9 @@ sub model_to_excel_file
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ObjectSelection
+$model is a FBAFileUtil.ModelObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -529,9 +668,9 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ObjectSelection
+$model is a FBAFileUtil.ModelObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -608,7 +747,7 @@ sub model_to_sbml_file
 
 =head2 model_to_tsv_file
 
-  $f = $obj->model_to_tsv_file($model)
+  $files = $obj->model_to_tsv_file($model)
 
 =over 4
 
@@ -617,11 +756,14 @@ sub model_to_sbml_file
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ObjectSelection
-$f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+$model is a FBAFileUtil.ModelObjectSelection
+$files is a FBAFileUtil.ModelTsvFiles
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+ModelTsvFiles is a reference to a hash where the following keys are defined:
+	compounds_file has a value which is a FBAFileUtil.File
+	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -631,11 +773,14 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ObjectSelection
-$f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+$model is a FBAFileUtil.ModelObjectSelection
+$files is a FBAFileUtil.ModelTsvFiles
+ModelObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+ModelTsvFiles is a reference to a hash where the following keys are defined:
+	compounds_file has a value which is a FBAFileUtil.File
+	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -666,17 +811,51 @@ sub model_to_tsv_file
     }
 
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
-    my($f);
+    my($files);
     #BEGIN model_to_tsv_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseFBA_FBAModel_to_TSV_FBAModel.pl';
+
+    # [object_name=s', 'workspace object name from which the input is to be read'],
+    # ['workspace_name=s', 'workspace name from which the input is to be read'],
+    # ['workspace_service_url=s', 'workspace service url to pull from']
+    my @args = ("perl", $script, 
+                    '--object_name', $model->{'model_name'},
+                    '--workspace_name', $model->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files_list = get_result_files($output_dir);
+    if( scalar(@files_list) != 2 ) {
+        die 'Incorrect number of files was generated! Expected 2 files.';
+    }
+
+    $files = {};
+    foreach my $f (@files_list) {
+        if($f =~ m/FBAModelCompounds.tsv$/) {
+            $files->{compound_file} = { path => $output_dir . '/' . $f };
+        }
+        if($f =~ m/FBAModelReactions.tsv$/) {
+            $files->{reactions_file} = { path => $output_dir . '/' . $f };
+        }
+    }
+    print Dumper($files).'\n';
+
     #END model_to_tsv_file
     my @_bad_returns;
-    (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
+    (ref($files) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"files\" (value was \"$files\")");
     if (@_bad_returns) {
 	my $msg = "Invalid returns passed to model_to_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
 							       method_name => 'model_to_tsv_file');
     }
-    return($f);
+    return($files);
 }
 
 
@@ -693,11 +872,11 @@ sub model_to_tsv_file
 =begin html
 
 <pre>
-$fba is a FBAFileUtil.ObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	fba_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -707,11 +886,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$fba is a FBAFileUtil.ObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	fba_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -722,7 +901,7 @@ File is a reference to a hash where the following keys are defined:
 
 =item Description
 
-****** FBA Result Converters ******
+
 
 =back
 
@@ -769,11 +948,11 @@ sub fba_to_excel_file
 =begin html
 
 <pre>
-$fba is a FBAFileUtil.ObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	fba_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -783,11 +962,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$fba is a FBAFileUtil.ObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	fba_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -836,7 +1015,7 @@ sub fba_to_tsv_file
 
 =head2 tsv_file_to_media
 
-  $obj->tsv_file_to_media()
+  $return = $obj->tsv_file_to_media($p)
 
 =over 4
 
@@ -845,6 +1024,16 @@ sub fba_to_tsv_file
 =begin html
 
 <pre>
+$p is a FBAFileUtil.MediaCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+MediaCreationParams is a reference to a hash where the following keys are defined:
+	media_file has a value which is a FBAFileUtil.File
+	media_name has a value which is a string
+	workspace_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
 
 </pre>
 
@@ -852,6 +1041,16 @@ sub fba_to_tsv_file
 
 =begin text
 
+$p is a FBAFileUtil.MediaCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+MediaCreationParams is a reference to a hash where the following keys are defined:
+	media_file has a value which is a FBAFileUtil.File
+	media_name has a value which is a string
+	workspace_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
 
 
 =end text
@@ -860,7 +1059,7 @@ sub fba_to_tsv_file
 
 =item Description
 
-****** Media Converters *********
+
 
 =back
 
@@ -869,11 +1068,110 @@ sub fba_to_tsv_file
 sub tsv_file_to_media
 {
     my $self = shift;
+    my($p) = @_;
+
+    my @_bad_arguments;
+    (ref($p) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"p\" (value was \"$p\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to tsv_file_to_media:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'tsv_file_to_media');
+    }
 
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($return);
     #BEGIN tsv_file_to_media
     #END tsv_file_to_media
-    return();
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to tsv_file_to_media:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'tsv_file_to_media');
+    }
+    return($return);
+}
+
+
+
+
+=head2 excel_file_to_media
+
+  $return = $obj->excel_file_to_media($p)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$p is a FBAFileUtil.MediaCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+MediaCreationParams is a reference to a hash where the following keys are defined:
+	media_file has a value which is a FBAFileUtil.File
+	media_name has a value which is a string
+	workspace_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$p is a FBAFileUtil.MediaCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+MediaCreationParams is a reference to a hash where the following keys are defined:
+	media_file has a value which is a FBAFileUtil.File
+	media_name has a value which is a string
+	workspace_name has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub excel_file_to_media
+{
+    my $self = shift;
+    my($p) = @_;
+
+    my @_bad_arguments;
+    (ref($p) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"p\" (value was \"$p\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to excel_file_to_media:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'excel_file_to_media');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($return);
+    #BEGIN excel_file_to_media
+    #END excel_file_to_media
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to excel_file_to_media:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'excel_file_to_media');
+    }
+    return($return);
 }
 
 
@@ -890,11 +1188,11 @@ sub tsv_file_to_media
 =begin html
 
 <pre>
-$media is a FBAFileUtil.ObjectSelection
+$media is a FBAFileUtil.MediaObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	media_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -904,11 +1202,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$media is a FBAFileUtil.ObjectSelection
+$media is a FBAFileUtil.MediaObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	media_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -957,7 +1255,7 @@ sub media_to_tsv_file
 
 =head2 tsv_file_to_phenotype_set
 
-  $obj->tsv_file_to_phenotype_set()
+  $return = $obj->tsv_file_to_phenotype_set($p)
 
 =over 4
 
@@ -966,6 +1264,17 @@ sub media_to_tsv_file
 =begin html
 
 <pre>
+$p is a FBAFileUtil.PhenotypeCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+PhenotypeCreationParams is a reference to a hash where the following keys are defined:
+	phenotype_file has a value which is a FBAFileUtil.File
+	phenotype_name has a value which is a string
+	workspace_name has a value which is a string
+	genome has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
 
 </pre>
 
@@ -973,6 +1282,17 @@ sub media_to_tsv_file
 
 =begin text
 
+$p is a FBAFileUtil.PhenotypeCreationParams
+$return is a FBAFileUtil.WorkspaceRef
+PhenotypeCreationParams is a reference to a hash where the following keys are defined:
+	phenotype_file has a value which is a FBAFileUtil.File
+	phenotype_name has a value which is a string
+	workspace_name has a value which is a string
+	genome has a value which is a string
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+WorkspaceRef is a reference to a hash where the following keys are defined:
+	ref has a value which is a string
 
 
 =end text
@@ -981,7 +1301,7 @@ sub media_to_tsv_file
 
 =item Description
 
-****** Phenotype Data Converters *******
+
 
 =back
 
@@ -990,11 +1310,28 @@ sub media_to_tsv_file
 sub tsv_file_to_phenotype_set
 {
     my $self = shift;
+    my($p) = @_;
+
+    my @_bad_arguments;
+    (ref($p) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"p\" (value was \"$p\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to tsv_file_to_phenotype_set:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'tsv_file_to_phenotype_set');
+    }
 
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($return);
     #BEGIN tsv_file_to_phenotype_set
     #END tsv_file_to_phenotype_set
-    return();
+    my @_bad_returns;
+    (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to tsv_file_to_phenotype_set:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'tsv_file_to_phenotype_set');
+    }
+    return($return);
 }
 
 
@@ -1011,11 +1348,11 @@ sub tsv_file_to_phenotype_set
 =begin html
 
 <pre>
-$phenotype is a FBAFileUtil.ObjectSelection
+$phenotype is a FBAFileUtil.PhenotypeObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1025,11 +1362,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$phenotype is a FBAFileUtil.ObjectSelection
+$phenotype is a FBAFileUtil.PhenotypeObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1087,11 +1424,11 @@ sub phenotype_set_to_tsv_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1101,11 +1438,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1163,11 +1500,11 @@ sub phenotype_simulation_set_to_excel_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1177,11 +1514,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1239,11 +1576,11 @@ sub phenotype_simulation_set_to_tsv_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1253,11 +1590,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.ObjectSelection
+$pss is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-ObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	model_name has a value which is a string
+	phenotype_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1353,11 +1690,6 @@ sub status {
 
 
 
-=item Description
-
-***** FBA Model Converters *******
-
-
 =item Definition
 
 =begin html
@@ -1418,6 +1750,11 @@ ref has a value which is a string
 
 
 
+=item Description
+
+compounds_file is not used for excel file creations
+
+
 =item Definition
 
 =begin html
@@ -1427,6 +1764,9 @@ a reference to a hash where the following keys are defined:
 model_file has a value which is a FBAFileUtil.File
 model_name has a value which is a string
 workspace_name has a value which is a string
+genome has a value which is a string
+biomass has a value which is a reference to a list where each element is a string
+compounds_file has a value which is a FBAFileUtil.File
 
 </pre>
 
@@ -1438,6 +1778,9 @@ a reference to a hash where the following keys are defined:
 model_file has a value which is a FBAFileUtil.File
 model_name has a value which is a string
 workspace_name has a value which is a string
+genome has a value which is a string
+biomass has a value which is a reference to a list where each element is a string
+compounds_file has a value which is a FBAFileUtil.File
 
 
 =end text
@@ -1446,7 +1789,7 @@ workspace_name has a value which is a string
 
 
 
-=head2 ObjectSelection
+=head2 ModelObjectSelection
 
 =over 4
 
@@ -1470,6 +1813,251 @@ model_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 model_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ModelTsvFiles
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+compounds_file has a value which is a FBAFileUtil.File
+reactions_file has a value which is a FBAFileUtil.File
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+compounds_file has a value which is a FBAFileUtil.File
+reactions_file has a value which is a FBAFileUtil.File
+
+
+=end text
+
+=back
+
+
+
+=head2 FBAObjectSelection
+
+=over 4
+
+
+
+=item Description
+
+****** FBA Result Converters ******
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+fba_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+fba_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 MediaCreationParams
+
+=over 4
+
+
+
+=item Description
+
+****** Media Converters *********
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+media_file has a value which is a FBAFileUtil.File
+media_name has a value which is a string
+workspace_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+media_file has a value which is a FBAFileUtil.File
+media_name has a value which is a string
+workspace_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 MediaObjectSelection
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+media_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+media_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 PhenotypeCreationParams
+
+=over 4
+
+
+
+=item Description
+
+****** Phenotype Data Converters *******
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+phenotype_file has a value which is a FBAFileUtil.File
+phenotype_name has a value which is a string
+workspace_name has a value which is a string
+genome has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+phenotype_file has a value which is a FBAFileUtil.File
+phenotype_name has a value which is a string
+workspace_name has a value which is a string
+genome has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 PhenotypeObjectSelection
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 PhenotypeSetObjectSelection
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_name has a value which is a string
 
 
 =end text
