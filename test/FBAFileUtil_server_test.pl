@@ -160,6 +160,27 @@ sub test_phenotype_set_import_export {
 }
 
 
+sub test_fba_export {
+
+    # TODO: save fba from file
+
+    my $fba_ref = '8378/49/1';
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$fba_ref } ] })->[0];
+
+    my $ret = $impl->fba_to_excel_file({
+                        fba_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got FBA excel file: '.$ret->{path}."\n");
+
+    my $ret = $impl->fba_to_tsv_file({
+                        fba_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got FBA tsv file: '.Dumper($ret)."\n");
+}
+
+
 
 
 #######  actually run the tests here
@@ -169,6 +190,9 @@ eval {
     test_media_import_export();
 
     test_model_import_export();
+
+    # comment out this test because it requires FBA available in WS
+    #test_fba_export();
 
 };
 my $err = undef;

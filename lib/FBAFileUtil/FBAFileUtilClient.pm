@@ -1641,98 +1641,6 @@ File is a reference to a hash where the following keys are defined:
     }
 }
  
-
-
-=head2 phenotype_simulation_set_to_excel_file
-
-  $f = $obj->phenotype_simulation_set_to_excel_file($pss)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
-$f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	phenotype_simulation_set_name has a value which is a string
-File is a reference to a hash where the following keys are defined:
-	path has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
-$f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	phenotype_simulation_set_name has a value which is a string
-File is a reference to a hash where the following keys are defined:
-	path has a value which is a string
-
-
-=end text
-
-=item Description
-
-
-
-=back
-
-=cut
-
- sub phenotype_simulation_set_to_excel_file
-{
-    my($self, @args) = @_;
-
-# Authentication: required
-
-    if ((my $n = @args) != 1)
-    {
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function phenotype_simulation_set_to_excel_file (received $n, expecting 1)");
-    }
-    {
-	my($pss) = @args;
-
-	my @_bad_arguments;
-        (ref($pss) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"pss\" (value was \"$pss\")");
-        if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to phenotype_simulation_set_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'phenotype_simulation_set_to_excel_file');
-	}
-    }
-
-    my $url = $self->{url};
-    my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "FBAFileUtil.phenotype_simulation_set_to_excel_file",
-	    params => \@args,
-    });
-    if ($result) {
-	if ($result->is_error) {
-	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
-					       code => $result->content->{error}->{code},
-					       method_name => 'phenotype_simulation_set_to_excel_file',
-					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
-					      );
-	} else {
-	    return wantarray ? @{$result->result} : $result->result->[0];
-	}
-    } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method phenotype_simulation_set_to_excel_file",
-					    status_line => $self->{client}->status_line,
-					    method_name => 'phenotype_simulation_set_to_excel_file',
-				       );
-    }
-}
- 
   
 
 sub version {
@@ -1746,16 +1654,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'phenotype_simulation_set_to_excel_file',
+                method_name => 'phenotype_simulation_set_to_tsv_file',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method phenotype_simulation_set_to_excel_file",
+            error => "Error invoking method phenotype_simulation_set_to_tsv_file",
             status_line => $self->{client}->status_line,
-            method_name => 'phenotype_simulation_set_to_excel_file',
+            method_name => 'phenotype_simulation_set_to_tsv_file',
         );
     }
 }

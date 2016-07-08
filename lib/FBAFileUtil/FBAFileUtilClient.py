@@ -241,15 +241,3 @@ class FBAFileUtil(object):
         return self._client.call_method(
             'FBAFileUtil.phenotype_simulation_set_to_tsv_file',
             [pss], self._service_ver, context)
-
-    def phenotype_simulation_set_to_excel_file(self, pss, context=None):
-        """
-        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
-           -> structure: parameter "workspace_name" of String, parameter
-           "phenotype_simulation_set_name" of String
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String
-        """
-        return self._client.call_method(
-            'FBAFileUtil.phenotype_simulation_set_to_excel_file',
-            [pss], self._service_ver, context)

@@ -3,9 +3,9 @@ use strict;
 use Bio::KBase::Exceptions;
 # Use Semantic Versioning (2.0.0-rc.1)
 # http://semver.org 
-our $VERSION = "0.0.1";
+our $VERSION = "0.1.0";
 our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
-our $GIT_COMMIT_HASH = "601a778cbd11697f2a95b2ea4254a8956c31e3db";
+our $GIT_COMMIT_HASH = "e9b43988f42cdd0bcae9b56129c95399dc979a7f";
 
 =head1 NAME
 
@@ -839,7 +839,7 @@ sub model_to_tsv_file
     $files = {};
     foreach my $f (@files_list) {
         if($f =~ m/FBAModelCompounds.tsv$/) {
-            $files->{compound_file} = { path => $output_dir . '/' . $f };
+            $files->{compounds_file} = { path => $output_dir . '/' . $f };
         }
         if($f =~ m/FBAModelReactions.tsv$/) {
             $files->{reactions_file} = { path => $output_dir . '/' . $f };
@@ -922,6 +922,28 @@ sub fba_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN fba_to_excel_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseFBA_FBA_to_Excel_FBA.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $fba->{'fba_name'},
+                    '--workspace_name', $fba->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
     #END fba_to_excel_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -998,6 +1020,36 @@ sub fba_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN fba_to_tsv_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBaseFBA_FBA_to_TSV_FBA.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $fba->{'fba_name'},
+                    '--workspace_name', $fba->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files_list = get_result_files($output_dir);
+    if( scalar(@files_list) != 2 ) {
+        die 'Incorrect number of files was generated! Expected 2 files.';
+    }
+
+    $files = {};
+    foreach my $f (@files_list) {
+        if($f =~ m/FBACompounds.tsv$/) {
+            $files->{compounds_file} = { path => $output_dir . '/' . $f };
+        }
+        if($f =~ m/FBAReactions.tsv$/) {
+            $files->{reactions_file} = { path => $output_dir . '/' . $f };
+        }
+    }
+
     #END fba_to_tsv_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -1685,6 +1737,29 @@ sub phenotype_simulation_set_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_excel_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBasePhenotypes_PhenotypeSimulationSet_to_Excel_PhenotypeSimulationSet.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $pss->{'phenotype_simulation_set_name'},
+                    '--workspace_name', $pss->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
+
     #END phenotype_simulation_set_to_excel_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -1761,6 +1836,29 @@ sub phenotype_simulation_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_tsv_file
+
+        # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBasePhenotypes_PhenotypeSimulationSet_to_TSV_PhenotypeSimulationSet.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $pss->{'phenotype_simulation_set_name'},
+                    '--workspace_name', $pss->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
+
     #END phenotype_simulation_set_to_tsv_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -1768,82 +1866,6 @@ sub phenotype_simulation_set_to_tsv_file
 	my $msg = "Invalid returns passed to phenotype_simulation_set_to_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
 							       method_name => 'phenotype_simulation_set_to_tsv_file');
-    }
-    return($f);
-}
-
-
-
-
-=head2 phenotype_simulation_set_to_excel_file
-
-  $f = $obj->phenotype_simulation_set_to_excel_file($pss)
-
-=over 4
-
-=item Parameter and return types
-
-=begin html
-
-<pre>
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
-$f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	phenotype_simulation_set_name has a value which is a string
-File is a reference to a hash where the following keys are defined:
-	path has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
-$f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
-	workspace_name has a value which is a string
-	phenotype_simulation_set_name has a value which is a string
-File is a reference to a hash where the following keys are defined:
-	path has a value which is a string
-
-
-=end text
-
-
-
-=item Description
-
-
-
-=back
-
-=cut
-
-sub phenotype_simulation_set_to_excel_file
-{
-    my $self = shift;
-    my($pss) = @_;
-
-    my @_bad_arguments;
-    (ref($pss) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"pss\" (value was \"$pss\")");
-    if (@_bad_arguments) {
-	my $msg = "Invalid arguments passed to phenotype_simulation_set_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'phenotype_simulation_set_to_excel_file');
-    }
-
-    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
-    my($f);
-    #BEGIN phenotype_simulation_set_to_excel_file
-    #END phenotype_simulation_set_to_excel_file
-    my @_bad_returns;
-    (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
-    if (@_bad_returns) {
-	my $msg = "Invalid returns passed to phenotype_simulation_set_to_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
-	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-							       method_name => 'phenotype_simulation_set_to_excel_file');
     }
     return($f);
 }

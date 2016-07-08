@@ -57,7 +57,12 @@ module FBAFileUtil {
     } FBAObjectSelection;
 
     funcdef fba_to_excel_file(FBAObjectSelection fba) returns(File f) authentication required;
-    funcdef fba_to_tsv_file(FBAObjectSelection fba) returns(File f) authentication required;
+
+    typedef structure {
+        File compounds_file;
+        File reactions_file;
+    } FBATsvFiles;
+    funcdef fba_to_tsv_file(FBAObjectSelection fba) returns(FBATsvFiles files) authentication required;
 
 
 

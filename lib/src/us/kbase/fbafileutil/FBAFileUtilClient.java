@@ -417,21 +417,4 @@ public class FBAFileUtilClient {
         List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
-
-    /**
-     * <p>Original spec-file function name: phenotype_simulation_set_to_excel_file</p>
-     * <pre>
-     * </pre>
-     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSimulationSetObjectSelection PhenotypeSimulationSetObjectSelection}
-     * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
-     * @throws IOException if an IO exception occurs
-     * @throws JsonClientException if a JSON RPC exception occurs
-     */
-    public us.kbase.fbafileutil.File phenotypeSimulationSetToExcelFile(PhenotypeSimulationSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
-        List<Object> args = new ArrayList<Object>();
-        args.add(pss);
-        TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
-        List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
-        return res.get(0);
-    }
 }
