@@ -107,8 +107,6 @@ module FBAFileUtil {
 
     funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
     funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
-    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
-
 
 
 };

@@ -166,9 +166,9 @@ sub test_phenotype_set_import_export {
 eval {
     test_phenotype_set_import_export();
 
-    #test_media_import_export();
+    test_media_import_export();
 
-    #test_model_import_export();
+    test_model_import_export();
 
 };
 my $err = undef;
