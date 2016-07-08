@@ -94,11 +94,7 @@ sub test_model_import_export {
 
 sub test_media_import_export {
 
-    # Prepare test objects in workspace if needed using 
-    # $ws_client->save_objects({workspace => get_ws_name(), objects => []});
-    #
-    
-    # Model to/from Excel file
+    # Media to/from Excel file
     my $retObj = $impl->excel_file_to_media({
                         media_name=>'excel_test_media', 
                         workspace_name=>get_ws_name(),
@@ -113,9 +109,9 @@ sub test_media_import_export {
                     });
     print('Got excel file: '.$ret->{path}."\n");
 
-    # Model to/from TSV file
+    # Media to/from TSV file
     my $retObj = $impl->tsv_file_to_media({
-                        media_name=>'excel_test_media', 
+                        media_name=>'tsv_test_media', 
                         workspace_name=>get_ws_name(),
                         media_file=>{path=>'/kb/module/test/data/media_example.txt'}
                     });
@@ -129,14 +125,50 @@ sub test_media_import_export {
     print('Got tsv file: '.$ret->{path}."\n");
 }
 
+sub test_phenotype_set_import_export {
+
+    # requires a media
+    my $current_ws_name = get_ws_name();
+    my $retObj = $impl->tsv_file_to_media({
+                        media_name=>'tsv_test_media', 
+                        workspace_name=>$current_ws_name,
+                        media_file=>{path=>'/kb/module/test/data/media_example.txt'}
+                    });
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+
+    # create a test phenotype set file
+    my $filename = '/kb/module/test/data/temp_test_phenotype_set_data.txt';
+    open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
+    print $fh "media\tmediaws\tgrowth\tgeneko\taddtlCpd\n";
+    print $fh "tsv_test_media\t$current_ws_name\t1\tnone\tnone\n";
+    close $fh;
+
+    # Phenotype Set to/from TSV file
+    my $retObj = $impl->tsv_file_to_phenotype_set({
+                        phenotype_set_name=>'excel_test_phenotype_set', 
+                        workspace_name=>get_ws_name(),
+                        phenotype_set_file=>{path=>'/kb/module/test/data/temp_test_phenotype_set_data.txt'}
+                    });
+    print('New Phenotype Set Ref: '.$retObj->{'ref'}."\n");
+
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->phenotype_set_to_tsv_file({
+                        phenotype_set_name=>$info->[1], 
+                        workspace_name=>$info->[7]
+                    });
+    print('Got tsv file: '.$ret->{path}."\n");
+}
 
 
 
 
 #######  actually run the tests here
 eval {
-    test_model_import_export();
-    test_media_import_export();
+    test_phenotype_set_import_export();
+
+    #test_media_import_export();
+
+    #test_model_import_export();
 
 };
 my $err = undef;

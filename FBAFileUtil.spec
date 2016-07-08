@@ -85,30 +85,29 @@ module FBAFileUtil {
     /******* Phenotype Data Converters ********/
 
     typedef structure {
-        File phenotype_file;
-        string phenotype_name;
+        File phenotype_set_file;
+        string phenotype_set_name;
         string workspace_name;
         string genome;
-    } PhenotypeCreationParams;
+    } PhenotypeSetCreationParams;
 
-    funcdef tsv_file_to_phenotype_set(PhenotypeCreationParams p) returns (WorkspaceRef) authentication required;
-
-
-    typedef structure {
-        string workspace_name;
-        string phenotype_name;
-    } PhenotypeObjectSelection;
-
-    funcdef phenotype_set_to_tsv_file(PhenotypeObjectSelection phenotype) returns (File f) authentication required;
+    funcdef tsv_file_to_phenotype_set(PhenotypeSetCreationParams p) returns (WorkspaceRef) authentication required;
 
     typedef structure {
         string workspace_name;
-        string phenotype_name;
+        string phenotype_set_name;
     } PhenotypeSetObjectSelection;
 
-    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSetObjectSelection pss) returns (File f) authentication required;
-    funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSetObjectSelection pss) returns (File f) authentication required;
-    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSetObjectSelection pss) returns (File f) authentication required;
+    funcdef phenotype_set_to_tsv_file(PhenotypeSetObjectSelection phenotype_set) returns (File f) authentication required;
+
+    typedef structure {
+        string workspace_name;
+        string phenotype_simulation_set_name;
+    } PhenotypeSimulationSetObjectSelection;
+
+    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
+    funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
+    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
 
 
 

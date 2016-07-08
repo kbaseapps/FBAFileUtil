@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org 
 our $VERSION = "0.0.1";
 our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
-our $GIT_COMMIT_HASH = "8bec7e3c0c996686f5e76aceea0ac1bbf1c43431";
+our $GIT_COMMIT_HASH = "601a778cbd11697f2a95b2ea4254a8956c31e3db";
 
 =head1 NAME
 
@@ -1190,7 +1190,7 @@ sub excel_file_to_media
     my $uploadScript = '/kb/module/lib/PATCH_trns_transform_Excel_Media_to_KBaseBiochem_Media.pl';
 
     # validate
-    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'media_file'}->{'path'});
     print("Running: @vArgs \n");
     my $vRet = system(@vArgs);
     check_system_call($vRet);
@@ -1432,11 +1432,11 @@ sub media_to_excel_file
 =begin html
 
 <pre>
-$p is a FBAFileUtil.PhenotypeCreationParams
+$p is a FBAFileUtil.PhenotypeSetCreationParams
 $return is a FBAFileUtil.WorkspaceRef
-PhenotypeCreationParams is a reference to a hash where the following keys are defined:
-	phenotype_file has a value which is a FBAFileUtil.File
-	phenotype_name has a value which is a string
+PhenotypeSetCreationParams is a reference to a hash where the following keys are defined:
+	phenotype_set_file has a value which is a FBAFileUtil.File
+	phenotype_set_name has a value which is a string
 	workspace_name has a value which is a string
 	genome has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -1450,11 +1450,11 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$p is a FBAFileUtil.PhenotypeCreationParams
+$p is a FBAFileUtil.PhenotypeSetCreationParams
 $return is a FBAFileUtil.WorkspaceRef
-PhenotypeCreationParams is a reference to a hash where the following keys are defined:
-	phenotype_file has a value which is a FBAFileUtil.File
-	phenotype_name has a value which is a string
+PhenotypeSetCreationParams is a reference to a hash where the following keys are defined:
+	phenotype_set_file has a value which is a FBAFileUtil.File
+	phenotype_set_name has a value which is a string
 	workspace_name has a value which is a string
 	genome has a value which is a string
 File is a reference to a hash where the following keys are defined:
@@ -1491,6 +1491,26 @@ sub tsv_file_to_phenotype_set
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_phenotype_set
+
+    # setup output scripts to call
+    my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_TSV_Phenotypes_to_KBasePhenotypes_PhenotypeSet.pl';
+
+    my @uploadArgs = ("perl", $uploadScript,
+                    '--input_file_name', $p->{'phenotype_set_file'}->{'path'},
+                    '--object_name', $p->{'phenotype_set_name'},
+                    '--workspace_name', $p->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'},
+                    '--fba_service_url', 'impl');
+
+    print("Running: @uploadArgs \n");
+    my $ret = system(@uploadArgs);
+    check_system_call($ret);
+
+    # get WS info so we can determine the ws reference to return
+    my $ref = $self->get_ws_obj_ref($p->{'workspace_name'}, $p->{'phenotype_set_name'});
+    $return = { ref => $ref };
+    print("Saved new Phenotype Set to: $ref\n");
+
     #END tsv_file_to_phenotype_set
     my @_bad_returns;
     (ref($return) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"return\" (value was \"$return\")");
@@ -1507,7 +1527,7 @@ sub tsv_file_to_phenotype_set
 
 =head2 phenotype_set_to_tsv_file
 
-  $f = $obj->phenotype_set_to_tsv_file($phenotype)
+  $f = $obj->phenotype_set_to_tsv_file($phenotype_set)
 
 =over 4
 
@@ -1516,11 +1536,11 @@ sub tsv_file_to_phenotype_set
 =begin html
 
 <pre>
-$phenotype is a FBAFileUtil.PhenotypeObjectSelection
+$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1530,11 +1550,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$phenotype is a FBAFileUtil.PhenotypeObjectSelection
+$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1554,10 +1574,10 @@ File is a reference to a hash where the following keys are defined:
 sub phenotype_set_to_tsv_file
 {
     my $self = shift;
-    my($phenotype) = @_;
+    my($phenotype_set) = @_;
 
     my @_bad_arguments;
-    (ref($phenotype) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"phenotype\" (value was \"$phenotype\")");
+    (ref($phenotype_set) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"phenotype_set\" (value was \"$phenotype_set\")");
     if (@_bad_arguments) {
 	my $msg = "Invalid arguments passed to phenotype_set_to_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
@@ -1567,6 +1587,28 @@ sub phenotype_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_set_to_tsv_file
+
+    # TODO: better input error checking
+    my $output_dir = $self->set_working_dir();
+    my $script = $self->{'transform-plugin-path'}.'/scripts/download/trns_transform_KBasePhenotypes_PhenotypeSet_to_TSV_PhenotypeSet.pl';
+
+    my @args = ("perl", $script, 
+                    '--object_name', $phenotype_set->{'phenotype_set_name'},
+                    '--workspace_name', $phenotype_set->{'workspace_name'},
+                    '--workspace_service_url', $self->{'workspace-url'});
+    print("Running: @args \n");
+
+    my $ret = system(@args);
+    check_system_call($ret);
+
+    # collect output
+    my @files = get_result_files($output_dir);
+    if( scalar(@files) != 1 ) {
+        print("Generated : @files");
+        die 'Incorrect number of files was generated! Expected 1 file.';
+    }
+    $f = { path => $output_dir . '/' . $files[0] };
+
     #END phenotype_set_to_tsv_file
     my @_bad_returns;
     (ref($f) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"f\" (value was \"$f\")");
@@ -1592,11 +1634,11 @@ sub phenotype_set_to_tsv_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1606,11 +1648,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1668,11 +1710,11 @@ sub phenotype_simulation_set_to_excel_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1682,11 +1724,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1744,11 +1786,11 @@ sub phenotype_simulation_set_to_tsv_file
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -1758,11 +1800,11 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.PhenotypeSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
-	phenotype_name has a value which is a string
+	phenotype_simulation_set_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 
@@ -2129,7 +2171,7 @@ media_name has a value which is a string
 
 
 
-=head2 PhenotypeCreationParams
+=head2 PhenotypeSetCreationParams
 
 =over 4
 
@@ -2146,8 +2188,8 @@ media_name has a value which is a string
 
 <pre>
 a reference to a hash where the following keys are defined:
-phenotype_file has a value which is a FBAFileUtil.File
-phenotype_name has a value which is a string
+phenotype_set_file has a value which is a FBAFileUtil.File
+phenotype_set_name has a value which is a string
 workspace_name has a value which is a string
 genome has a value which is a string
 
@@ -2158,42 +2200,10 @@ genome has a value which is a string
 =begin text
 
 a reference to a hash where the following keys are defined:
-phenotype_file has a value which is a FBAFileUtil.File
-phenotype_name has a value which is a string
+phenotype_set_file has a value which is a FBAFileUtil.File
+phenotype_set_name has a value which is a string
 workspace_name has a value which is a string
 genome has a value which is a string
-
-
-=end text
-
-=back
-
-
-
-=head2 PhenotypeObjectSelection
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-phenotype_name has a value which is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-workspace_name has a value which is a string
-phenotype_name has a value which is a string
 
 
 =end text
@@ -2215,7 +2225,7 @@ phenotype_name has a value which is a string
 <pre>
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
-phenotype_name has a value which is a string
+phenotype_set_name has a value which is a string
 
 </pre>
 
@@ -2225,7 +2235,39 @@ phenotype_name has a value which is a string
 
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
-phenotype_name has a value which is a string
+phenotype_set_name has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 PhenotypeSimulationSetObjectSelection
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_simulation_set_name has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_name has a value which is a string
+phenotype_simulation_set_name has a value which is a string
 
 
 =end text

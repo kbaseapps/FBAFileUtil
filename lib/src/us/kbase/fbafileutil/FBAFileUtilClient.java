@@ -354,12 +354,12 @@ public class FBAFileUtilClient {
      * <p>Original spec-file function name: tsv_file_to_phenotype_set</p>
      * <pre>
      * </pre>
-     * @param   p   instance of type {@link us.kbase.fbafileutil.PhenotypeCreationParams PhenotypeCreationParams}
+     * @param   p   instance of type {@link us.kbase.fbafileutil.PhenotypeSetCreationParams PhenotypeSetCreationParams}
      * @return   instance of type {@link us.kbase.fbafileutil.WorkspaceRef WorkspaceRef}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public WorkspaceRef tsvFileToPhenotypeSet(PhenotypeCreationParams p, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public WorkspaceRef tsvFileToPhenotypeSet(PhenotypeSetCreationParams p, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(p);
         TypeReference<List<WorkspaceRef>> retType = new TypeReference<List<WorkspaceRef>>() {};
@@ -371,14 +371,14 @@ public class FBAFileUtilClient {
      * <p>Original spec-file function name: phenotype_set_to_tsv_file</p>
      * <pre>
      * </pre>
-     * @param   phenotype   instance of type {@link us.kbase.fbafileutil.PhenotypeObjectSelection PhenotypeObjectSelection}
+     * @param   phenotypeSet   instance of type {@link us.kbase.fbafileutil.PhenotypeSetObjectSelection PhenotypeSetObjectSelection}
      * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public us.kbase.fbafileutil.File phenotypeSetToTsvFile(PhenotypeObjectSelection phenotype, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public us.kbase.fbafileutil.File phenotypeSetToTsvFile(PhenotypeSetObjectSelection phenotypeSet, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
-        args.add(phenotype);
+        args.add(phenotypeSet);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
         List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_set_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
@@ -388,12 +388,12 @@ public class FBAFileUtilClient {
      * <p>Original spec-file function name: phenotype_simulation_set_to_excel_file</p>
      * <pre>
      * </pre>
-     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSetObjectSelection PhenotypeSetObjectSelection}
+     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSimulationSetObjectSelection PhenotypeSimulationSetObjectSelection}
      * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public us.kbase.fbafileutil.File phenotypeSimulationSetToExcelFile(PhenotypeSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public us.kbase.fbafileutil.File phenotypeSimulationSetToExcelFile(PhenotypeSimulationSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
@@ -405,12 +405,12 @@ public class FBAFileUtilClient {
      * <p>Original spec-file function name: phenotype_simulation_set_to_tsv_file</p>
      * <pre>
      * </pre>
-     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSetObjectSelection PhenotypeSetObjectSelection}
+     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSimulationSetObjectSelection PhenotypeSimulationSetObjectSelection}
      * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public us.kbase.fbafileutil.File phenotypeSimulationSetToTsvFile(PhenotypeSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public us.kbase.fbafileutil.File phenotypeSimulationSetToTsvFile(PhenotypeSimulationSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
@@ -422,12 +422,12 @@ public class FBAFileUtilClient {
      * <p>Original spec-file function name: phenotype_simulation_set_to_excel_file</p>
      * <pre>
      * </pre>
-     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSetObjectSelection PhenotypeSetObjectSelection}
+     * @param   pss   instance of type {@link us.kbase.fbafileutil.PhenotypeSimulationSetObjectSelection PhenotypeSimulationSetObjectSelection}
      * @return   parameter "f" of type {@link us.kbase.fbafileutil.File File}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public us.kbase.fbafileutil.File phenotypeSimulationSetToExcelFile(PhenotypeSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public us.kbase.fbafileutil.File phenotypeSimulationSetToExcelFile(PhenotypeSimulationSetObjectSelection pss, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};

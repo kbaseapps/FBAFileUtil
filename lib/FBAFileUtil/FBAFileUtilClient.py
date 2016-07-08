@@ -194,10 +194,10 @@ class FBAFileUtil(object):
 
     def tsv_file_to_phenotype_set(self, p, context=None):
         """
-        :param p: instance of type "PhenotypeCreationParams" (******
+        :param p: instance of type "PhenotypeSetCreationParams" (******
            Phenotype Data Converters *******) -> structure: parameter
-           "phenotype_file" of type "File" -> structure: parameter "path" of
-           String, parameter "phenotype_name" of String, parameter
+           "phenotype_set_file" of type "File" -> structure: parameter "path"
+           of String, parameter "phenotype_set_name" of String, parameter
            "workspace_name" of String, parameter "genome" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
@@ -206,23 +206,23 @@ class FBAFileUtil(object):
             'FBAFileUtil.tsv_file_to_phenotype_set',
             [p], self._service_ver, context)
 
-    def phenotype_set_to_tsv_file(self, phenotype, context=None):
+    def phenotype_set_to_tsv_file(self, phenotype_set, context=None):
         """
-        :param phenotype: instance of type "PhenotypeObjectSelection" ->
-           structure: parameter "workspace_name" of String, parameter
-           "phenotype_name" of String
+        :param phenotype_set: instance of type "PhenotypeSetObjectSelection"
+           -> structure: parameter "workspace_name" of String, parameter
+           "phenotype_set_name" of String
         :returns: instance of type "File" -> structure: parameter "path" of
            String
         """
         return self._client.call_method(
             'FBAFileUtil.phenotype_set_to_tsv_file',
-            [phenotype], self._service_ver, context)
+            [phenotype_set], self._service_ver, context)
 
     def phenotype_simulation_set_to_excel_file(self, pss, context=None):
         """
-        :param pss: instance of type "PhenotypeSetObjectSelection" ->
-           structure: parameter "workspace_name" of String, parameter
-           "phenotype_name" of String
+        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
+           -> structure: parameter "workspace_name" of String, parameter
+           "phenotype_simulation_set_name" of String
         :returns: instance of type "File" -> structure: parameter "path" of
            String
         """
@@ -232,9 +232,9 @@ class FBAFileUtil(object):
 
     def phenotype_simulation_set_to_tsv_file(self, pss, context=None):
         """
-        :param pss: instance of type "PhenotypeSetObjectSelection" ->
-           structure: parameter "workspace_name" of String, parameter
-           "phenotype_name" of String
+        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
+           -> structure: parameter "workspace_name" of String, parameter
+           "phenotype_simulation_set_name" of String
         :returns: instance of type "File" -> structure: parameter "path" of
            String
         """
@@ -244,9 +244,9 @@ class FBAFileUtil(object):
 
     def phenotype_simulation_set_to_excel_file(self, pss, context=None):
         """
-        :param pss: instance of type "PhenotypeSetObjectSelection" ->
-           structure: parameter "workspace_name" of String, parameter
-           "phenotype_name" of String
+        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
+           -> structure: parameter "workspace_name" of String, parameter
+           "phenotype_simulation_set_name" of String
         :returns: instance of type "File" -> structure: parameter "path" of
            String
         """

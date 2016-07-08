@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: PhenotypeSetObjectSelection</p>
+ * <p>Original spec-file type: PhenotypeSimulationSetObjectSelection</p>
  * 
  * 
  */
@@ -20,14 +20,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "workspace_name",
-    "phenotype_set_name"
+    "phenotype_simulation_set_name"
 })
-public class PhenotypeSetObjectSelection {
+public class PhenotypeSimulationSetObjectSelection {
 
     @JsonProperty("workspace_name")
     private String workspaceName;
-    @JsonProperty("phenotype_set_name")
-    private String phenotypeSetName;
+    @JsonProperty("phenotype_simulation_set_name")
+    private String phenotypeSimulationSetName;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("workspace_name")
@@ -40,23 +40,23 @@ public class PhenotypeSetObjectSelection {
         this.workspaceName = workspaceName;
     }
 
-    public PhenotypeSetObjectSelection withWorkspaceName(String workspaceName) {
+    public PhenotypeSimulationSetObjectSelection withWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
 
-    @JsonProperty("phenotype_set_name")
-    public String getPhenotypeSetName() {
-        return phenotypeSetName;
+    @JsonProperty("phenotype_simulation_set_name")
+    public String getPhenotypeSimulationSetName() {
+        return phenotypeSimulationSetName;
     }
 
-    @JsonProperty("phenotype_set_name")
-    public void setPhenotypeSetName(String phenotypeSetName) {
-        this.phenotypeSetName = phenotypeSetName;
+    @JsonProperty("phenotype_simulation_set_name")
+    public void setPhenotypeSimulationSetName(String phenotypeSimulationSetName) {
+        this.phenotypeSimulationSetName = phenotypeSimulationSetName;
     }
 
-    public PhenotypeSetObjectSelection withPhenotypeSetName(String phenotypeSetName) {
-        this.phenotypeSetName = phenotypeSetName;
+    public PhenotypeSimulationSetObjectSelection withPhenotypeSimulationSetName(String phenotypeSimulationSetName) {
+        this.phenotypeSimulationSetName = phenotypeSimulationSetName;
         return this;
     }
 
@@ -72,7 +72,7 @@ public class PhenotypeSetObjectSelection {
 
     @Override
     public String toString() {
-        return ((((((("PhenotypeSetObjectSelection"+" [workspaceName=")+ workspaceName)+", phenotypeSetName=")+ phenotypeSetName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((("PhenotypeSimulationSetObjectSelection"+" [workspaceName=")+ workspaceName)+", phenotypeSimulationSetName=")+ phenotypeSimulationSetName)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
