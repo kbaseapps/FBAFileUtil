@@ -127,7 +127,7 @@ sub test_media_import_export {
 
 sub test_phenotype_set_import_export {
 
-    # requires a media
+    # requires a media, so save an example
     my $current_ws_name = get_ws_name();
     my $retObj = $impl->tsv_file_to_media({
                         media_name=>'tsv_test_media', 
@@ -162,7 +162,7 @@ sub test_phenotype_set_import_export {
 
 sub test_fba_export {
 
-    # TODO: save fba from file
+    # TODO: save fba from local file
 
     my $fba_ref = '8378/49/1';
     my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$fba_ref } ] })->[0];
@@ -181,18 +181,115 @@ sub test_fba_export {
 }
 
 
+sub test_phenotype_simulation_set_export {
+
+    # requires a model and phenotype set, and phenotype set requires a media, so save an example of each
+    my $current_ws_name = get_ws_name();
+    my $retObj = $impl->tsv_file_to_media({
+                        media_name=>'tsv_test_media', 
+                        workspace_name=>$current_ws_name,
+                        media_file=>{path=>'/kb/module/test/data/media_example.txt'}
+                    });
+    my $media_ref = $retObj->{'ref'};
+    #my $media_info = $ws_client->get_object_info_new({ objects=>[ { ref=>$media_ref } ] })->[0];
+
+    # now a model
+    my $retObj = $impl->tsv_file_to_model({
+                        model_name=>'tsv_test_Rhodobacter.fbamdl', 
+                        workspace_name=>get_ws_name(),
+                        model_file=>{path=>'/kb/module/test/data/Reactions.txt'},
+                        compounds_file=>{path=>'/kb/module/test/data/compounds.txt'}
+                    });
+    my $model_ref = $retObj->{'ref'};
+    #my $model_info = $ws_client->get_object_info_new({ objects=>[ { ref=>$model_ref } ] })->[0];
+
+    # now a phenotype
+    my $filename = '/kb/module/test/data/temp_test_phenotype_set_data.txt';
+    open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
+    print $fh "media\tmediaws\tgrowth\tgeneko\taddtlCpd\n";
+    print $fh "tsv_test_media\t$current_ws_name\t1\tnone\tnone\n";
+    close $fh;
+
+    my $retObj = $impl->tsv_file_to_phenotype_set({
+                        phenotype_set_name=>'test_phenotype_set', 
+                        workspace_name=>get_ws_name(),
+                        phenotype_set_file=>{path=>'/kb/module/test/data/temp_test_phenotype_set_data.txt'}
+                    });
+    my $phenotype_ref = $retObj->{'ref'};
+    #my $phenotype_info = $ws_client->get_object_info_new({ objects=>[ { ref=>$phenotype_ref } ] })->[0];
+    my $phenotype_data = $ws_client->get_objects([ { ref=>$phenotype_ref } ] )->[0]->{data};
+    #print('phenotype data: '.Dumper($phenotype_data)."\n");
+
+    # now create a simple phenotype simulation set object and save it directly to the ws:
+    # Example:
+    #{
+    #    "__VERSION__": 1,
+    #    "fbamodel_ref": "1985/25/2",
+    #    "id": "Rhodobacter_sphaeroides_2.4.1.phe.4.phenosim1",
+    #    "phenotypeSimulations": [
+    #        {
+    #            "id": "Rhodobacter_sphaeroides_2.4.1.phe.4.phe.1.sim",
+    #            "phenoclass": "CP",
+    #            "phenotype_ref": "1985/38/1/phenotypes/id/Rhodobacter_sphaeroides_2.4.1.phe.4.phe.1",
+    #            "simulatedGrowth": 1.09122,
+    #            "simulatedGrowthFraction": 1
+    #        }
+    #    ],
+    #    "phenotypeset_ref": "1985/38/1"
+    #}
+    my $pss = {
+        '__VERSRION__'=>1,
+        'id'=>'pheonsim1',
+        'fbamodel_ref'=>$model_ref,
+        'phenotypeset_ref'=>$phenotype_ref,
+        'phenotypeSimulations'=>[
+            {
+                'id'=>'sim1',
+                'phenoclass'=>'CP',
+                'simulatedGrowth'=>1.09122,
+                'simulatedGrowthFraction'=>1,
+                'phenotype_ref'=>$phenotype_ref.'/phenotypes/id/'.$phenotype_data->{phenotypes}->[0]->{id}
+            }
+        ]
+    };
+
+    my $saveDataParams = {
+        'type'=>'KBasePhenotypes.PhenotypeSimulationSet',
+        'data'=>$pss,
+        'name'=>'test_phenotype_simulation_set'
+    };
+
+    my $pss_info = $ws_client->save_objects({ workspace=>get_ws_name(), objects=>[ $saveDataParams ] } )->[0];
+
+    # OK, finally we can try out the two downloader functions
+    my $ret = $impl->phenotype_simulation_set_to_excel_file({
+                        phenotype_simulation_set_name=>$pss_info->[1], 
+                        workspace_name=>$pss_info->[7]
+                    });
+    print('Got phenotype_simulation_set excel file: '.$ret->{path}."\n");
+
+    my $ret = $impl->phenotype_simulation_set_to_tsv_file({
+                        phenotype_simulation_set_name=>$pss_info->[1], 
+                        workspace_name=>$pss_info->[7]
+                    });
+    print('Got phenotype_simulation_set tsv file: '.$ret->{path}."\n");
+}
+
 
 
 #######  actually run the tests here
 eval {
-    test_phenotype_set_import_export();
-
-    test_media_import_export();
 
     test_model_import_export();
 
+    test_media_import_export();
+
     # comment out this test because it requires FBA available in WS
     #test_fba_export();
+
+    test_phenotype_set_import_export();
+
+    test_phenotype_simulation_set_export();
 
 };
 my $err = undef;
