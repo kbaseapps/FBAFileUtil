@@ -114,7 +114,7 @@ sub get_file_path
 
         my $f = $dataUtil->shock_to_file({ 
                                 shock_id=>$file->{shock_id},
-                                file_path=>$workdir,
+                                file_path=>$target_dir,
                                 unpack=>0
                             });
         return $f->{node_file_name};
@@ -126,9 +126,16 @@ sub get_file_path
 sub load_to_shock
 {
     my $self = shift;
-    my $file = shift;
+    my $file_path = shift;
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $f = $dataUtil->file_to_shock({ 
+                                file_path=>$file_path,
+                                #attributes->{ string=> UnspecifiedObject } # we can set shock attributes if we want
+                                gzip=>0,
+                                make_handle=>0
+                            });
 
-
+    return $f->{shock_id};
 }
 
 
@@ -257,15 +264,18 @@ sub excel_file_to_model
     # Needed to patch because $fbaurl and $wsurl parameters were not read in properly
     my $uploadScript = '/kb/module/lib/PATCH_trns_transform_Excel_FBAModel_to_KBaseFBA_FBAModel.pl';
 
+    # get the file path (will download to scratch if the input is a shock node)
+    my $model_file_path = $self->get_file_path($p->{'model_file'}, $self->{scratch});
+
     # validate
-    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $model_file_path);
     print("Running: @vArgs \n");
     my $vRet = system(@vArgs);
     check_system_call($vRet);
 
     ### could pull out this logic into separate function:
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'model_file'}->{'path'},
+                    '--input_file_name', $model_file_path,
                     '--object_name', $p->{'model_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -281,8 +291,6 @@ sub excel_file_to_model
     }
     # No compounds file allowed for excel files; data is in excel file
     #if(exists $p->{'compounds_file'}) {
-    #    push @uploadArgs, '--compounds';
-    #    push @uploadArgs, $p->{'compounds_file'}->{'path'};
     #}
                     
     print("Running: @uploadArgs \n");
@@ -389,11 +397,13 @@ sub sbml_file_to_model
     my $sbmlValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_SBML_FBAModel.py';
     my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_SBML_FBAModel_to_KBaseFBA_FBAModel.pl';
 
+    # get the file path (will download to scratch if the input is a shock node)
+    my $model_file_path = $self->get_file_path($p->{'model_file'}, $self->{scratch});
 
-    # Skip SBML Validation - some missing dependencies exist here... need to install libsbml and install validate to 
+    # Skip SBML Validation - some missing dependencies exist here... need to install libsbml and install validate
     #my $working_dir = $self->set_working_dir();
     #my @vArgs = ("python", $sbmlValidateScript,
-    #                '--input_file_name', $p->{'model_file'}->{'path'},
+    #                '--input_file_name', $model_file_path,
     #                '--working_directory', $working_dir);
     #print("Running: @vArgs \n");
     #my $vRet = system(@vArgs);
@@ -411,7 +421,7 @@ sub sbml_file_to_model
 
     ### could pull out this logic into separate function:
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'model_file'}->{'path'},
+                    '--input_file_name', $model_file_path,
                     '--object_name', $p->{'model_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -427,7 +437,8 @@ sub sbml_file_to_model
     }
     if(exists $p->{'compounds_file'}) {
         push @uploadArgs, '--compounds';
-        push @uploadArgs, $p->{'compounds_file'}->{'path'};
+        my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+        push @uploadArgs, $compounds_file_path;
     }
                     
     print("Running: @uploadArgs \n");
@@ -536,15 +547,17 @@ sub tsv_file_to_model
     # Needed to patch because $fbaurl and $wsurl parameters were not read in properly
     my $uploadScript = '/kb/module/lib/PATCH_trns_transform_TSV_FBAModel_to_KBaseFBA_FBAModel.pl';
 
+    my $model_file_path = $self->get_file_path($p->{'model_file'}, $self->{scratch});
+
     # validate
-    my @vArgs = ("perl", $tsvValidateScript, '--input_file_name', $p->{'model_file'}->{'path'});
+    my @vArgs = ("perl", $tsvValidateScript, '--input_file_name', $model_file_path);
     print("Running: @vArgs \n");
     my $vRet = system(@vArgs);
     check_system_call($vRet);
 
     ### could pull out this logic into separate function:
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'model_file'}->{'path'},
+                    '--input_file_name', $model_file_path,
                     '--object_name', $p->{'model_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -560,7 +573,8 @@ sub tsv_file_to_model
     }
     if(exists $p->{'compounds_file'}) {
         push @uploadArgs, '--compounds';
-        push @uploadArgs, $p->{'compounds_file'}->{'path'};
+        my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+        push @uploadArgs, $compounds_file_path;
     }
                     
     print("Running: @uploadArgs \n");
@@ -677,7 +691,12 @@ sub model_to_excel_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END model_to_excel_file
     my @_bad_returns;
@@ -785,7 +804,12 @@ sub model_to_sbml_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END model_to_sbml_file
     my @_bad_returns;
@@ -901,12 +925,23 @@ sub model_to_tsv_file
     $files = {};
     foreach my $f (@files_list) {
         if($f =~ m/FBAModelCompounds.tsv$/) {
-            $files->{compounds_file} = { path => $output_dir . '/' . $f };
+            my $file_path = $output_dir . '/' . $f;
+            if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+                $files->{compounds_file} = { shock_id => $self->load_to_shock($file_path) };
+            } else {
+                $files->{compounds_file} = { path => $file_path };
+            }
         }
         if($f =~ m/FBAModelReactions.tsv$/) {
-            $files->{reactions_file} = { path => $output_dir . '/' . $f };
+            my $file_path = $output_dir . '/' . $f;
+            if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+                $files->{reactions_file} = { shock_id => $self->load_to_shock($file_path) };
+            } else {
+                $files->{reactions_file} = { path => $file_path };
+            }
         }
     }
+    # TODO: may have to zip up the files since there are two results
 
     #END model_to_tsv_file
     my @_bad_returns;
@@ -1010,7 +1045,12 @@ sub fba_to_excel_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END fba_to_excel_file
     my @_bad_returns;
@@ -1123,12 +1163,23 @@ sub fba_to_tsv_file
     $files = {};
     foreach my $f (@files_list) {
         if($f =~ m/FBACompounds.tsv$/) {
-            $files->{compounds_file} = { path => $output_dir . '/' . $f };
+            my $file_path = $output_dir . '/' . $f;
+            if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+                $files->{compounds_file} = { shock_id =>  $self->load_to_shock($file_path) };
+            } else {
+                $files->{compounds_file} = { path => $file_path };
+            }
         }
         if($f =~ m/FBAReactions.tsv$/) {
-            $files->{reactions_file} = { path => $output_dir . '/' . $f };
+            my $file_path = $output_dir . '/' . $f;
+            if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+                $files->{reactions_file} = { shock_id =>  $self->load_to_shock($file_path) };
+            } else {
+                $files->{reactions_file} = { path => $file_path };
+            }
         }
     }
+    # TODO: may have to zip up the files since there are two results
 
     #END fba_to_tsv_file
     my @_bad_returns;
@@ -1215,11 +1266,13 @@ sub tsv_file_to_media
     my($return);
     #BEGIN tsv_file_to_media
 
+    my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
+
     # setup output scripts to call
     my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_TSV_Media_to_KBaseBiochem_Media.pl';
 
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'media_file'}->{'path'},
+                    '--input_file_name', $media_file_path,
                     '--object_name', $p->{'media_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -1319,6 +1372,8 @@ sub excel_file_to_media
     my($return);
     #BEGIN excel_file_to_media
 
+    my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
+
     # setup output scripts to call
     my $excelValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_Excel_Media.pl';
     #my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_Excel_Media_to_KBaseBiochem_Media.pl';
@@ -1326,13 +1381,13 @@ sub excel_file_to_media
     my $uploadScript = '/kb/module/lib/PATCH_trns_transform_Excel_Media_to_KBaseBiochem_Media.pl';
 
     # validate
-    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $p->{'media_file'}->{'path'});
+    my @vArgs = ("perl", $excelValidateScript, '--input_file_name', $media_file_path);
     print("Running: @vArgs \n");
     my $vRet = system(@vArgs);
     check_system_call($vRet);
 
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'media_file'}->{'path'},
+                    '--input_file_name', $media_file_path,
                     '--object_name', $p->{'media_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -1449,7 +1504,12 @@ sub media_to_tsv_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $media->{save_to_shock} && $media->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END media_to_tsv_file
     my @_bad_returns;
@@ -1553,7 +1613,12 @@ sub media_to_excel_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $media->{save_to_shock} && $media->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END media_to_excel_file
     my @_bad_returns;
@@ -1642,11 +1707,13 @@ sub tsv_file_to_phenotype_set
     my($return);
     #BEGIN tsv_file_to_phenotype_set
 
+    my $phenotype_set_file_path = $self->get_file_path($p->{'phenotype_set_file'}, $self->{scratch});
+
     # setup output scripts to call
     my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_TSV_Phenotypes_to_KBasePhenotypes_PhenotypeSet.pl';
 
     my @uploadArgs = ("perl", $uploadScript,
-                    '--input_file_name', $p->{'phenotype_set_file'}->{'path'},
+                    '--input_file_name', $phenotype_set_file_path,
                     '--object_name', $p->{'phenotype_set_name'},
                     '--workspace_name', $p->{'workspace_name'},
                     '--workspace_service_url', $self->{'workspace-url'},
@@ -1763,7 +1830,12 @@ sub phenotype_set_to_tsv_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $phenotype_set->{save_to_shock} && $phenotype_set->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
     #END phenotype_set_to_tsv_file
     my @_bad_returns;
@@ -1867,7 +1939,12 @@ sub phenotype_simulation_set_to_excel_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $pss->{save_to_shock} && $pss->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
 
     #END phenotype_simulation_set_to_excel_file
@@ -1972,7 +2049,12 @@ sub phenotype_simulation_set_to_tsv_file
         print("Generated : @files");
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
-    $f = { path => $output_dir . '/' . $files[0] };
+    my $file_path = $output_dir . '/' . $files[0];
+    if(exists $pss->{save_to_shock} && $pss->{save_to_shock}==1) {
+        $f = { shock_id => $self->load_to_shock($file_path) };
+    } else {
+        $f = { path => $file_path };
+    }
 
 
     #END phenotype_simulation_set_to_tsv_file

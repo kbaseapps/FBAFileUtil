@@ -36,18 +36,37 @@ sub test_model_import_export {
 
     
     # Model to/from Excel file
-    my $retObj = $impl->excel_file_to_model({
-                        model_name=>'excel_test_Rhodobacter.fbamdl', 
-                        workspace_name=>get_ws_name(),
-                        model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xls'}
-                    });
-    print('New Model Ref: '.$retObj->{'ref'}."\n");
+    #my $retObj = $impl->excel_file_to_model({
+    #                    model_name=>'excel_test_Rhodobacter.fbamdl', 
+    #                    workspace_name=>get_ws_name(),
+    #                    model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xls'}
+    #                });
+    #print('New Model Ref: '.$retObj->{'ref'}."\n");
     my $retObj = $impl->excel_file_to_model({
                         model_name=>'excel_test_Rhodobacter.fbamdl', 
                         workspace_name=>get_ws_name(),
                         model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xlsx'}
                     });
     print('New Model Ref: '.$retObj->{'ref'}."\n");
+
+    #####SHOCK DOWNLOAD/UPLOAD TEST
+    my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
+    my $ret = $impl->model_to_excel_file({
+                        model_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got excel file in shock node: '.$ret->{shock_id}."\n");
+
+    # NOTE: This fails because the worksheets are incorrectly named in the Model download!
+    #my $retObj = $impl->excel_file_to_model({
+    #                    model_name=>'excel_test_Rhodobacter.fbamdl', 
+    #                    workspace_name=>get_ws_name(),
+    #                    model_file=>{shock_id=>$ret->{shock_id}}
+    #                });
+    #print('New Model Ref loaded from shock excel file: '.$retObj->{'ref'}."\n");
+    ##### END SHOCK
+
 
     my $info = $ws_client->get_object_info_new({ objects=>[ { ref=>$retObj->{'ref'} } ] })->[0];
     my $ret = $impl->model_to_excel_file({
@@ -72,6 +91,12 @@ sub test_model_import_export {
                         workspace_name=>$info->[7]
                     });
     print('Got tsv file: '.Dumper($ret->{path})."\n");
+    my $ret = $impl->model_to_tsv_file({
+                        model_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got tsv files in shock nodes: '.Dumper($ret)."\n");
 
 
     # Test To and From SBML File
@@ -89,6 +114,20 @@ sub test_model_import_export {
                         workspace_name=>$info->[7]
                     });
     print('Got file: '.$ret->{path}."\n");
+    my $ret = $impl->model_to_sbml_file({
+                        model_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got sbml file in shock nodes: '.Dumper($ret)."\n");
+
+    # also doesn't work to reupload sbml that was downloaded
+    #my $retObj = $impl->sbml_file_to_model({
+    #                    model_name=>'sbml_test_Rhodobacter.fbamdl2', 
+    #                    workspace_name=>get_ws_name(),
+    #                    model_file=>{shock_id=>$ret->{shock_id}}
+    #                });
+    #print('Reuploaded Model SBML from shock: '.$retObj->{'ref'}."\n");
 }
 
 
@@ -108,6 +147,20 @@ sub test_media_import_export {
                         workspace_name=>$info->[7]
                     });
     print('Got excel file: '.$ret->{path}."\n");
+    my $ret = $impl->media_to_excel_file({
+                        media_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got excel file in shock nodes: '.$ret->{shock_id}."\n");
+
+    # Again, does not work.
+    #my $retObj = $impl->excel_file_to_media({
+    #                    media_name=>'excel_test_media', 
+    #                    workspace_name=>get_ws_name(),
+    #                    media_file=>{shock_id=>$ret->{shock_id}}
+    #                });
+    #print('Reuploaded Media Ref from shock: '.$retObj->{'ref'}."\n");
 
     # Media to/from TSV file
     my $retObj = $impl->tsv_file_to_media({
@@ -123,6 +176,19 @@ sub test_media_import_export {
                         workspace_name=>$info->[7]
                     });
     print('Got tsv file: '.$ret->{path}."\n");
+    my $ret = $impl->media_to_tsv_file({
+                        media_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got tsv file in shock node: '.$ret->{shock_id}."\n");
+
+    my $retObj = $impl->tsv_file_to_media({
+                        media_name=>'tsv_test_media', 
+                        workspace_name=>get_ws_name(),
+                        media_file=>{shock_id=>$ret->{shock_id}}
+                    });
+    print('Reuploaded Media Ref tsv from shock: '.$retObj->{'ref'}."\n");
 }
 
 sub test_phenotype_set_import_export {
@@ -145,7 +211,7 @@ sub test_phenotype_set_import_export {
 
     # Phenotype Set to/from TSV file
     my $retObj = $impl->tsv_file_to_phenotype_set({
-                        phenotype_set_name=>'excel_test_phenotype_set', 
+                        phenotype_set_name=>'tsv_test_phenotype_set', 
                         workspace_name=>get_ws_name(),
                         phenotype_set_file=>{path=>'/kb/module/test/data/temp_test_phenotype_set_data.txt'}
                     });
@@ -157,6 +223,19 @@ sub test_phenotype_set_import_export {
                         workspace_name=>$info->[7]
                     });
     print('Got tsv file: '.$ret->{path}."\n");
+    my $ret = $impl->phenotype_set_to_tsv_file({
+                        phenotype_set_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got tsv file in shock node: '.$ret->{shock_id}."\n");
+
+    my $retObj = $impl->tsv_file_to_phenotype_set({
+                        phenotype_set_name=>'tsv_test_phenotype_set2', 
+                        workspace_name=>get_ws_name(),
+                        phenotype_set_file=>{shock_id=>$ret->{shock_id}}
+                    });
+    print('Reuploaded Phenotype Set Ref from shock: '.$retObj->{'ref'}."\n");
 }
 
 
@@ -172,12 +251,25 @@ sub test_fba_export {
                         workspace_name=>$info->[7]
                     });
     print('Got FBA excel file: '.$ret->{path}."\n");
+    my $ret = $impl->fba_to_excel_file({
+                        fba_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got FBA excel file in shock node: '.$ret->{shock_id}."\n");
 
     my $ret = $impl->fba_to_tsv_file({
                         fba_name=>$info->[1], 
                         workspace_name=>$info->[7]
                     });
     print('Got FBA tsv file: '.Dumper($ret)."\n");
+
+    my $ret = $impl->fba_to_tsv_file({
+                        fba_name=>$info->[1], 
+                        workspace_name=>$info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got FBA tsv file in shock node: '.$ret->{shock_id}."\n");
 }
 
 
@@ -267,12 +359,27 @@ sub test_phenotype_simulation_set_export {
                         workspace_name=>$pss_info->[7]
                     });
     print('Got phenotype_simulation_set excel file: '.$ret->{path}."\n");
+    my $ret = $impl->phenotype_simulation_set_to_excel_file({
+                        phenotype_simulation_set_name=>$pss_info->[1], 
+                        workspace_name=>$pss_info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got phenotype_simulation_set excel file in shock node: '.$ret->{shock_id}."\n");
+    ok(exists $ret->{shock_id} && $ret->{shock_id} ne '');
 
     my $ret = $impl->phenotype_simulation_set_to_tsv_file({
                         phenotype_simulation_set_name=>$pss_info->[1], 
                         workspace_name=>$pss_info->[7]
                     });
     print('Got phenotype_simulation_set tsv file: '.$ret->{path}."\n");
+    ok(exists $ret->{path} && $ret->{path} ne '');
+    my $ret = $impl->phenotype_simulation_set_to_tsv_file({
+                        phenotype_simulation_set_name=>$pss_info->[1], 
+                        workspace_name=>$pss_info->[7],
+                        save_to_shock=>1
+                    });
+    print('Got phenotype_simulation_set tsv file in shock node: '.$ret->{shock_id}."\n");
+    ok(exists $ret->{shock_id} && $ret->{shock_id} ne '');
 }
 
 
@@ -285,7 +392,7 @@ eval {
     test_media_import_export();
 
     # comment out this test because it requires FBA available in WS
-    #test_fba_export();
+    test_fba_export();
 
     test_phenotype_set_import_export();
 
