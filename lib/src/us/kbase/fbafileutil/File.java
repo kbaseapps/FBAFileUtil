@@ -19,12 +19,15 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "path"
+    "path",
+    "shock_id"
 })
 public class File {
 
     @JsonProperty("path")
     private String path;
+    @JsonProperty("shock_id")
+    private String shockId;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("path")
@@ -42,6 +45,21 @@ public class File {
         return this;
     }
 
+    @JsonProperty("shock_id")
+    public String getShockId() {
+        return shockId;
+    }
+
+    @JsonProperty("shock_id")
+    public void setShockId(String shockId) {
+        this.shockId = shockId;
+    }
+
+    public File withShockId(String shockId) {
+        this.shockId = shockId;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -54,7 +72,7 @@ public class File {
 
     @Override
     public String toString() {
-        return ((((("File"+" [path=")+ path)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((("File"+" [path=")+ path)+", shockId=")+ shockId)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

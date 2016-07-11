@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: PhenotypeSetObjectSelection</p>
+ * <p>Original spec-file type: PhenotypeSetObjectSelectionParams</p>
  * 
  * 
  */
@@ -20,14 +20,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "workspace_name",
-    "phenotype_set_name"
+    "phenotype_set_name",
+    "save_to_shock"
 })
-public class PhenotypeSetObjectSelection {
+public class PhenotypeSetObjectSelectionParams {
 
     @JsonProperty("workspace_name")
     private String workspaceName;
     @JsonProperty("phenotype_set_name")
     private String phenotypeSetName;
+    @JsonProperty("save_to_shock")
+    private Long saveToShock;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("workspace_name")
@@ -40,7 +43,7 @@ public class PhenotypeSetObjectSelection {
         this.workspaceName = workspaceName;
     }
 
-    public PhenotypeSetObjectSelection withWorkspaceName(String workspaceName) {
+    public PhenotypeSetObjectSelectionParams withWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
@@ -55,8 +58,23 @@ public class PhenotypeSetObjectSelection {
         this.phenotypeSetName = phenotypeSetName;
     }
 
-    public PhenotypeSetObjectSelection withPhenotypeSetName(String phenotypeSetName) {
+    public PhenotypeSetObjectSelectionParams withPhenotypeSetName(String phenotypeSetName) {
         this.phenotypeSetName = phenotypeSetName;
+        return this;
+    }
+
+    @JsonProperty("save_to_shock")
+    public Long getSaveToShock() {
+        return saveToShock;
+    }
+
+    @JsonProperty("save_to_shock")
+    public void setSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
+    }
+
+    public PhenotypeSetObjectSelectionParams withSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
         return this;
     }
 
@@ -72,7 +90,7 @@ public class PhenotypeSetObjectSelection {
 
     @Override
     public String toString() {
-        return ((((((("PhenotypeSetObjectSelection"+" [workspaceName=")+ workspaceName)+", phenotypeSetName=")+ phenotypeSetName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("PhenotypeSetObjectSelectionParams"+" [workspaceName=")+ workspaceName)+", phenotypeSetName=")+ phenotypeSetName)+", saveToShock=")+ saveToShock)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

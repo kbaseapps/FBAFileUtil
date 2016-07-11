@@ -37,10 +37,11 @@ class FBAFileUtil(object):
         :param p: instance of type "ModelCreationParams" (compounds_file is
            not used for excel file creations) -> structure: parameter
            "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "model_name" of String, parameter
-           "workspace_name" of String, parameter "genome" of String,
-           parameter "biomass" of list of String, parameter "compounds_file"
-           of type "File" -> structure: parameter "path" of String
+           String, parameter "shock_id" of String, parameter "model_name" of
+           String, parameter "workspace_name" of String, parameter "genome"
+           of String, parameter "biomass" of list of String, parameter
+           "compounds_file" of type "File" -> structure: parameter "path" of
+           String, parameter "shock_id" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -53,10 +54,11 @@ class FBAFileUtil(object):
         :param p: instance of type "ModelCreationParams" (compounds_file is
            not used for excel file creations) -> structure: parameter
            "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "model_name" of String, parameter
-           "workspace_name" of String, parameter "genome" of String,
-           parameter "biomass" of list of String, parameter "compounds_file"
-           of type "File" -> structure: parameter "path" of String
+           String, parameter "shock_id" of String, parameter "model_name" of
+           String, parameter "workspace_name" of String, parameter "genome"
+           of String, parameter "biomass" of list of String, parameter
+           "compounds_file" of type "File" -> structure: parameter "path" of
+           String, parameter "shock_id" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -69,10 +71,11 @@ class FBAFileUtil(object):
         :param p: instance of type "ModelCreationParams" (compounds_file is
            not used for excel file creations) -> structure: parameter
            "model_file" of type "File" -> structure: parameter "path" of
-           String, parameter "model_name" of String, parameter
-           "workspace_name" of String, parameter "genome" of String,
-           parameter "biomass" of list of String, parameter "compounds_file"
-           of type "File" -> structure: parameter "path" of String
+           String, parameter "shock_id" of String, parameter "model_name" of
+           String, parameter "workspace_name" of String, parameter "genome"
+           of String, parameter "biomass" of list of String, parameter
+           "compounds_file" of type "File" -> structure: parameter "path" of
+           String, parameter "shock_id" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -82,11 +85,12 @@ class FBAFileUtil(object):
 
     def model_to_excel_file(self, model, context=None):
         """
-        :param model: instance of type "ModelObjectSelection" -> structure:
-           parameter "workspace_name" of String, parameter "model_name" of
-           String
+        :param model: instance of type "ModelObjectSelectionParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "model_name" of String, parameter "save_to_shock" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.model_to_excel_file',
@@ -94,11 +98,12 @@ class FBAFileUtil(object):
 
     def model_to_sbml_file(self, model, context=None):
         """
-        :param model: instance of type "ModelObjectSelection" -> structure:
-           parameter "workspace_name" of String, parameter "model_name" of
-           String
+        :param model: instance of type "ModelObjectSelectionParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "model_name" of String, parameter "save_to_shock" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.model_to_sbml_file',
@@ -106,13 +111,15 @@ class FBAFileUtil(object):
 
     def model_to_tsv_file(self, model, context=None):
         """
-        :param model: instance of type "ModelObjectSelection" -> structure:
-           parameter "workspace_name" of String, parameter "model_name" of
-           String
+        :param model: instance of type "ModelObjectSelectionParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "model_name" of String, parameter "save_to_shock" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "ModelTsvFiles" -> structure: parameter
            "compounds_file" of type "File" -> structure: parameter "path" of
-           String, parameter "reactions_file" of type "File" -> structure:
-           parameter "path" of String
+           String, parameter "shock_id" of String, parameter "reactions_file"
+           of type "File" -> structure: parameter "path" of String, parameter
+           "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.model_to_tsv_file',
@@ -120,11 +127,13 @@ class FBAFileUtil(object):
 
     def fba_to_excel_file(self, fba, context=None):
         """
-        :param fba: instance of type "FBAObjectSelection" (****** FBA Result
-           Converters ******) -> structure: parameter "workspace_name" of
-           String, parameter "fba_name" of String
+        :param fba: instance of type "FBAObjectSelectionParams" (****** FBA
+           Result Converters ******) -> structure: parameter "workspace_name"
+           of String, parameter "fba_name" of String, parameter
+           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.fba_to_excel_file',
@@ -132,11 +141,16 @@ class FBAFileUtil(object):
 
     def fba_to_tsv_file(self, fba, context=None):
         """
-        :param fba: instance of type "FBAObjectSelection" (****** FBA Result
-           Converters ******) -> structure: parameter "workspace_name" of
-           String, parameter "fba_name" of String
-        :returns: instance of type "File" -> structure: parameter "path" of
-           String
+        :param fba: instance of type "FBAObjectSelectionParams" (****** FBA
+           Result Converters ******) -> structure: parameter "workspace_name"
+           of String, parameter "fba_name" of String, parameter
+           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
+        :returns: instance of type "FBATsvFiles" -> structure: parameter
+           "compounds_file" of type "File" -> structure: parameter "path" of
+           String, parameter "shock_id" of String, parameter "reactions_file"
+           of type "File" -> structure: parameter "path" of String, parameter
+           "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.fba_to_tsv_file',
@@ -147,7 +161,8 @@ class FBAFileUtil(object):
         :param p: instance of type "MediaCreationParams" (****** Media
            Converters *********) -> structure: parameter "media_file" of type
            "File" -> structure: parameter "path" of String, parameter
-           "media_name" of String, parameter "workspace_name" of String
+           "shock_id" of String, parameter "media_name" of String, parameter
+           "workspace_name" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -160,7 +175,8 @@ class FBAFileUtil(object):
         :param p: instance of type "MediaCreationParams" (****** Media
            Converters *********) -> structure: parameter "media_file" of type
            "File" -> structure: parameter "path" of String, parameter
-           "media_name" of String, parameter "workspace_name" of String
+           "shock_id" of String, parameter "media_name" of String, parameter
+           "workspace_name" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -170,11 +186,12 @@ class FBAFileUtil(object):
 
     def media_to_tsv_file(self, media, context=None):
         """
-        :param media: instance of type "MediaObjectSelection" -> structure:
-           parameter "workspace_name" of String, parameter "media_name" of
-           String
+        :param media: instance of type "MediaObjectSelectionParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "media_name" of String, parameter "save_to_shock" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.media_to_tsv_file',
@@ -182,11 +199,12 @@ class FBAFileUtil(object):
 
     def media_to_excel_file(self, media, context=None):
         """
-        :param media: instance of type "MediaObjectSelection" -> structure:
-           parameter "workspace_name" of String, parameter "media_name" of
-           String
+        :param media: instance of type "MediaObjectSelectionParams" ->
+           structure: parameter "workspace_name" of String, parameter
+           "media_name" of String, parameter "save_to_shock" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.media_to_excel_file',
@@ -197,8 +215,9 @@ class FBAFileUtil(object):
         :param p: instance of type "PhenotypeSetCreationParams" (******
            Phenotype Data Converters *******) -> structure: parameter
            "phenotype_set_file" of type "File" -> structure: parameter "path"
-           of String, parameter "phenotype_set_name" of String, parameter
-           "workspace_name" of String, parameter "genome" of String
+           of String, parameter "shock_id" of String, parameter
+           "phenotype_set_name" of String, parameter "workspace_name" of
+           String, parameter "genome" of String
         :returns: instance of type "WorkspaceRef" -> structure: parameter
            "ref" of String
         """
@@ -208,11 +227,13 @@ class FBAFileUtil(object):
 
     def phenotype_set_to_tsv_file(self, phenotype_set, context=None):
         """
-        :param phenotype_set: instance of type "PhenotypeSetObjectSelection"
-           -> structure: parameter "workspace_name" of String, parameter
-           "phenotype_set_name" of String
+        :param phenotype_set: instance of type
+           "PhenotypeSetObjectSelectionParams" -> structure: parameter
+           "workspace_name" of String, parameter "phenotype_set_name" of
+           String, parameter "save_to_shock" of type "boolean" (A boolean - 0
+           for false, 1 for true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.phenotype_set_to_tsv_file',
@@ -220,11 +241,14 @@ class FBAFileUtil(object):
 
     def phenotype_simulation_set_to_excel_file(self, pss, context=None):
         """
-        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
-           -> structure: parameter "workspace_name" of String, parameter
-           "phenotype_simulation_set_name" of String
+        :param pss: instance of type
+           "PhenotypeSimulationSetObjectSelectionParams" -> structure:
+           parameter "workspace_name" of String, parameter
+           "phenotype_simulation_set_name" of String, parameter
+           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.phenotype_simulation_set_to_excel_file',
@@ -232,11 +256,14 @@ class FBAFileUtil(object):
 
     def phenotype_simulation_set_to_tsv_file(self, pss, context=None):
         """
-        :param pss: instance of type "PhenotypeSimulationSetObjectSelection"
-           -> structure: parameter "workspace_name" of String, parameter
-           "phenotype_simulation_set_name" of String
+        :param pss: instance of type
+           "PhenotypeSimulationSetObjectSelectionParams" -> structure:
+           parameter "workspace_name" of String, parameter
+           "phenotype_simulation_set_name" of String, parameter
+           "save_to_shock" of type "boolean" (A boolean - 0 for false, 1 for
+           true. @range (0, 1))
         :returns: instance of type "File" -> structure: parameter "path" of
-           String
+           String, parameter "shock_id" of String
         """
         return self._client.call_method(
             'FBAFileUtil.phenotype_simulation_set_to_tsv_file',

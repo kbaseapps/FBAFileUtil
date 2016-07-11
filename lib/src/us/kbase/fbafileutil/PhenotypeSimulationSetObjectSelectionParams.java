@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: PhenotypeSimulationSetObjectSelection</p>
+ * <p>Original spec-file type: PhenotypeSimulationSetObjectSelectionParams</p>
  * 
  * 
  */
@@ -20,14 +20,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "workspace_name",
-    "phenotype_simulation_set_name"
+    "phenotype_simulation_set_name",
+    "save_to_shock"
 })
-public class PhenotypeSimulationSetObjectSelection {
+public class PhenotypeSimulationSetObjectSelectionParams {
 
     @JsonProperty("workspace_name")
     private String workspaceName;
     @JsonProperty("phenotype_simulation_set_name")
     private String phenotypeSimulationSetName;
+    @JsonProperty("save_to_shock")
+    private Long saveToShock;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("workspace_name")
@@ -40,7 +43,7 @@ public class PhenotypeSimulationSetObjectSelection {
         this.workspaceName = workspaceName;
     }
 
-    public PhenotypeSimulationSetObjectSelection withWorkspaceName(String workspaceName) {
+    public PhenotypeSimulationSetObjectSelectionParams withWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
@@ -55,8 +58,23 @@ public class PhenotypeSimulationSetObjectSelection {
         this.phenotypeSimulationSetName = phenotypeSimulationSetName;
     }
 
-    public PhenotypeSimulationSetObjectSelection withPhenotypeSimulationSetName(String phenotypeSimulationSetName) {
+    public PhenotypeSimulationSetObjectSelectionParams withPhenotypeSimulationSetName(String phenotypeSimulationSetName) {
         this.phenotypeSimulationSetName = phenotypeSimulationSetName;
+        return this;
+    }
+
+    @JsonProperty("save_to_shock")
+    public Long getSaveToShock() {
+        return saveToShock;
+    }
+
+    @JsonProperty("save_to_shock")
+    public void setSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
+    }
+
+    public PhenotypeSimulationSetObjectSelectionParams withSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
         return this;
     }
 
@@ -72,7 +90,7 @@ public class PhenotypeSimulationSetObjectSelection {
 
     @Override
     public String toString() {
-        return ((((((("PhenotypeSimulationSetObjectSelection"+" [workspaceName=")+ workspaceName)+", phenotypeSimulationSetName=")+ phenotypeSimulationSetName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("PhenotypeSimulationSetObjectSelectionParams"+" [workspaceName=")+ workspaceName)+", phenotypeSimulationSetName=")+ phenotypeSimulationSetName)+", saveToShock=")+ saveToShock)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

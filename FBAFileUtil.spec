@@ -3,8 +3,14 @@
 */
 module FBAFileUtil {
 
+    /* A boolean - 0 for false, 1 for true.
+       @range (0, 1)
+    */
+    typedef int boolean;
+
     typedef structure {
         string path;
+        string shock_id;
     } File;
 
     typedef structure {
@@ -35,16 +41,17 @@ module FBAFileUtil {
     typedef structure {
         string workspace_name;
         string model_name;
-    } ModelObjectSelection;
+        boolean save_to_shock;
+    } ModelObjectSelectionParams;
 
-    funcdef model_to_excel_file(ModelObjectSelection model) returns(File f) authentication required;
-    funcdef model_to_sbml_file(ModelObjectSelection model) returns(File f) authentication required;
+    funcdef model_to_excel_file(ModelObjectSelectionParams model) returns(File f) authentication required;
+    funcdef model_to_sbml_file(ModelObjectSelectionParams model) returns(File f) authentication required;
 
     typedef structure {
         File compounds_file;
         File reactions_file;
     } ModelTsvFiles;
-    funcdef model_to_tsv_file(ModelObjectSelection model) returns(ModelTsvFiles files) authentication required;
+    funcdef model_to_tsv_file(ModelObjectSelectionParams model) returns(ModelTsvFiles files) authentication required;
 
 
 
@@ -54,15 +61,16 @@ module FBAFileUtil {
     typedef structure {
         string workspace_name;
         string fba_name;
-    } FBAObjectSelection;
+        boolean save_to_shock;
+    } FBAObjectSelectionParams;
 
-    funcdef fba_to_excel_file(FBAObjectSelection fba) returns(File f) authentication required;
+    funcdef fba_to_excel_file(FBAObjectSelectionParams fba) returns(File f) authentication required;
 
     typedef structure {
         File compounds_file;
         File reactions_file;
     } FBATsvFiles;
-    funcdef fba_to_tsv_file(FBAObjectSelection fba) returns(FBATsvFiles files) authentication required;
+    funcdef fba_to_tsv_file(FBAObjectSelectionParams fba) returns(FBATsvFiles files) authentication required;
 
 
 
@@ -81,10 +89,11 @@ module FBAFileUtil {
     typedef structure {
         string workspace_name;
         string media_name;
-    } MediaObjectSelection;
+        boolean save_to_shock;
+    } MediaObjectSelectionParams;
 
-    funcdef media_to_tsv_file(MediaObjectSelection media) returns(File f) authentication required;
-    funcdef media_to_excel_file(MediaObjectSelection media) returns(File f) authentication required;
+    funcdef media_to_tsv_file(MediaObjectSelectionParams media) returns(File f) authentication required;
+    funcdef media_to_excel_file(MediaObjectSelectionParams media) returns(File f) authentication required;
 
 
     /******* Phenotype Data Converters ********/
@@ -101,17 +110,19 @@ module FBAFileUtil {
     typedef structure {
         string workspace_name;
         string phenotype_set_name;
-    } PhenotypeSetObjectSelection;
+        boolean save_to_shock;
+    } PhenotypeSetObjectSelectionParams;
 
-    funcdef phenotype_set_to_tsv_file(PhenotypeSetObjectSelection phenotype_set) returns (File f) authentication required;
+    funcdef phenotype_set_to_tsv_file(PhenotypeSetObjectSelectionParams phenotype_set) returns (File f) authentication required;
 
     typedef structure {
         string workspace_name;
         string phenotype_simulation_set_name;
-    } PhenotypeSimulationSetObjectSelection;
+        boolean save_to_shock;
+    } PhenotypeSimulationSetObjectSelectionParams;
 
-    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
-    funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSimulationSetObjectSelection pss) returns (File f) authentication required;
+    funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelectionParams pss) returns (File f) authentication required;
+    funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSimulationSetObjectSelectionParams pss) returns (File f) authentication required;
 
 
 };

@@ -131,6 +131,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -151,6 +152,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -235,6 +237,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -255,6 +258,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -339,6 +343,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -359,6 +364,7 @@ ModelCreationParams is a reference to a hash where the following keys are define
 	compounds_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -432,13 +438,16 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $f is a FBAFileUtil.File
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -446,13 +455,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $f is a FBAFileUtil.File
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -524,13 +536,16 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $f is a FBAFileUtil.File
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -538,13 +553,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $f is a FBAFileUtil.File
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -616,16 +634,19 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $files is a FBAFileUtil.ModelTsvFiles
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 ModelTsvFiles is a reference to a hash where the following keys are defined:
 	compounds_file has a value which is a FBAFileUtil.File
 	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -633,16 +654,19 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$model is a FBAFileUtil.ModelObjectSelection
+$model is a FBAFileUtil.ModelObjectSelectionParams
 $files is a FBAFileUtil.ModelTsvFiles
-ModelObjectSelection is a reference to a hash where the following keys are defined:
+ModelObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	model_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 ModelTsvFiles is a reference to a hash where the following keys are defined:
 	compounds_file has a value which is a FBAFileUtil.File
 	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -714,13 +738,16 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$fba is a FBAFileUtil.FBAObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelectionParams
 $f is a FBAFileUtil.File
-FBAObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	fba_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -728,13 +755,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$fba is a FBAFileUtil.FBAObjectSelection
+$fba is a FBAFileUtil.FBAObjectSelectionParams
 $f is a FBAFileUtil.File
-FBAObjectSelection is a reference to a hash where the following keys are defined:
+FBAObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	fba_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -797,7 +827,7 @@ File is a reference to a hash where the following keys are defined:
 
 =head2 fba_to_tsv_file
 
-  $f = $obj->fba_to_tsv_file($fba)
+  $files = $obj->fba_to_tsv_file($fba)
 
 =over 4
 
@@ -806,13 +836,19 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$fba is a FBAFileUtil.FBAObjectSelection
-$f is a FBAFileUtil.File
-FBAObjectSelection is a reference to a hash where the following keys are defined:
+$fba is a FBAFileUtil.FBAObjectSelectionParams
+$files is a FBAFileUtil.FBATsvFiles
+FBAObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	fba_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
+FBATsvFiles is a reference to a hash where the following keys are defined:
+	compounds_file has a value which is a FBAFileUtil.File
+	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -820,13 +856,19 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$fba is a FBAFileUtil.FBAObjectSelection
-$f is a FBAFileUtil.File
-FBAObjectSelection is a reference to a hash where the following keys are defined:
+$fba is a FBAFileUtil.FBAObjectSelectionParams
+$files is a FBAFileUtil.FBATsvFiles
+FBAObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	fba_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
+FBATsvFiles is a reference to a hash where the following keys are defined:
+	compounds_file has a value which is a FBAFileUtil.File
+	reactions_file has a value which is a FBAFileUtil.File
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -906,6 +948,7 @@ MediaCreationParams is a reference to a hash where the following keys are define
 	workspace_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -923,6 +966,7 @@ MediaCreationParams is a reference to a hash where the following keys are define
 	workspace_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -1004,6 +1048,7 @@ MediaCreationParams is a reference to a hash where the following keys are define
 	workspace_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -1021,6 +1066,7 @@ MediaCreationParams is a reference to a hash where the following keys are define
 	workspace_name has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -1094,13 +1140,16 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$media is a FBAFileUtil.MediaObjectSelection
+$media is a FBAFileUtil.MediaObjectSelectionParams
 $f is a FBAFileUtil.File
-MediaObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	media_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -1108,13 +1157,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$media is a FBAFileUtil.MediaObjectSelection
+$media is a FBAFileUtil.MediaObjectSelectionParams
 $f is a FBAFileUtil.File
-MediaObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	media_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -1186,13 +1238,16 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$media is a FBAFileUtil.MediaObjectSelection
+$media is a FBAFileUtil.MediaObjectSelectionParams
 $f is a FBAFileUtil.File
-MediaObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	media_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -1200,13 +1255,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$media is a FBAFileUtil.MediaObjectSelection
+$media is a FBAFileUtil.MediaObjectSelectionParams
 $f is a FBAFileUtil.File
-MediaObjectSelection is a reference to a hash where the following keys are defined:
+MediaObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	media_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -1287,6 +1345,7 @@ PhenotypeSetCreationParams is a reference to a hash where the following keys are
 	genome has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -1305,6 +1364,7 @@ PhenotypeSetCreationParams is a reference to a hash where the following keys are
 	genome has a value which is a string
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 WorkspaceRef is a reference to a hash where the following keys are defined:
 	ref has a value which is a string
 
@@ -1378,13 +1438,16 @@ WorkspaceRef is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelection
+$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -1392,13 +1455,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelection
+$phenotype_set is a FBAFileUtil.PhenotypeSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -1470,13 +1536,16 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_simulation_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -1484,13 +1553,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_simulation_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -1562,13 +1634,16 @@ File is a reference to a hash where the following keys are defined:
 =begin html
 
 <pre>
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_simulation_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 </pre>
 
@@ -1576,13 +1651,16 @@ File is a reference to a hash where the following keys are defined:
 
 =begin text
 
-$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelection
+$pss is a FBAFileUtil.PhenotypeSimulationSetObjectSelectionParams
 $f is a FBAFileUtil.File
-PhenotypeSimulationSetObjectSelection is a reference to a hash where the following keys are defined:
+PhenotypeSimulationSetObjectSelectionParams is a reference to a hash where the following keys are defined:
 	workspace_name has a value which is a string
 	phenotype_simulation_set_name has a value which is a string
+	save_to_shock has a value which is a FBAFileUtil.boolean
+boolean is an int
 File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
+	shock_id has a value which is a string
 
 
 =end text
@@ -1700,6 +1778,38 @@ sub _validate_version {
 
 
 
+=head2 boolean
+
+=over 4
+
+
+
+=item Description
+
+A boolean - 0 for false, 1 for true.
+@range (0, 1)
+
+
+=item Definition
+
+=begin html
+
+<pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
 =head2 File
 
 =over 4
@@ -1713,6 +1823,7 @@ sub _validate_version {
 <pre>
 a reference to a hash where the following keys are defined:
 path has a value which is a string
+shock_id has a value which is a string
 
 </pre>
 
@@ -1722,6 +1833,7 @@ path has a value which is a string
 
 a reference to a hash where the following keys are defined:
 path has a value which is a string
+shock_id has a value which is a string
 
 
 =end text
@@ -1805,7 +1917,7 @@ compounds_file has a value which is a FBAFileUtil.File
 
 
 
-=head2 ModelObjectSelection
+=head2 ModelObjectSelectionParams
 
 =over 4
 
@@ -1819,6 +1931,7 @@ compounds_file has a value which is a FBAFileUtil.File
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 model_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 </pre>
 
@@ -1829,6 +1942,7 @@ model_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 model_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 
 =end text
@@ -1869,7 +1983,7 @@ reactions_file has a value which is a FBAFileUtil.File
 
 
 
-=head2 FBAObjectSelection
+=head2 FBAObjectSelectionParams
 
 =over 4
 
@@ -1888,6 +2002,7 @@ reactions_file has a value which is a FBAFileUtil.File
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 fba_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 </pre>
 
@@ -1898,6 +2013,39 @@ fba_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 fba_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 FBATsvFiles
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+compounds_file has a value which is a FBAFileUtil.File
+reactions_file has a value which is a FBAFileUtil.File
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+compounds_file has a value which is a FBAFileUtil.File
+reactions_file has a value which is a FBAFileUtil.File
 
 
 =end text
@@ -1945,7 +2093,7 @@ workspace_name has a value which is a string
 
 
 
-=head2 MediaObjectSelection
+=head2 MediaObjectSelectionParams
 
 =over 4
 
@@ -1959,6 +2107,7 @@ workspace_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 media_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 </pre>
 
@@ -1969,6 +2118,7 @@ media_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 media_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 
 =end text
@@ -2018,7 +2168,7 @@ genome has a value which is a string
 
 
 
-=head2 PhenotypeSetObjectSelection
+=head2 PhenotypeSetObjectSelectionParams
 
 =over 4
 
@@ -2032,6 +2182,7 @@ genome has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 phenotype_set_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 </pre>
 
@@ -2042,6 +2193,7 @@ phenotype_set_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 phenotype_set_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 
 =end text
@@ -2050,7 +2202,7 @@ phenotype_set_name has a value which is a string
 
 
 
-=head2 PhenotypeSimulationSetObjectSelection
+=head2 PhenotypeSimulationSetObjectSelectionParams
 
 =over 4
 
@@ -2064,6 +2216,7 @@ phenotype_set_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 phenotype_simulation_set_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 </pre>
 
@@ -2074,6 +2227,7 @@ phenotype_simulation_set_name has a value which is a string
 a reference to a hash where the following keys are defined:
 workspace_name has a value which is a string
 phenotype_simulation_set_name has a value which is a string
+save_to_shock has a value which is a FBAFileUtil.boolean
 
 
 =end text

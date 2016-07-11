@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ModelObjectSelection</p>
+ * <p>Original spec-file type: MediaObjectSelectionParams</p>
  * 
  * 
  */
@@ -20,14 +20,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "workspace_name",
-    "model_name"
+    "media_name",
+    "save_to_shock"
 })
-public class ModelObjectSelection {
+public class MediaObjectSelectionParams {
 
     @JsonProperty("workspace_name")
     private String workspaceName;
-    @JsonProperty("model_name")
-    private String modelName;
+    @JsonProperty("media_name")
+    private String mediaName;
+    @JsonProperty("save_to_shock")
+    private Long saveToShock;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("workspace_name")
@@ -40,23 +43,38 @@ public class ModelObjectSelection {
         this.workspaceName = workspaceName;
     }
 
-    public ModelObjectSelection withWorkspaceName(String workspaceName) {
+    public MediaObjectSelectionParams withWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
 
-    @JsonProperty("model_name")
-    public String getModelName() {
-        return modelName;
+    @JsonProperty("media_name")
+    public String getMediaName() {
+        return mediaName;
     }
 
-    @JsonProperty("model_name")
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
+    @JsonProperty("media_name")
+    public void setMediaName(String mediaName) {
+        this.mediaName = mediaName;
     }
 
-    public ModelObjectSelection withModelName(String modelName) {
-        this.modelName = modelName;
+    public MediaObjectSelectionParams withMediaName(String mediaName) {
+        this.mediaName = mediaName;
+        return this;
+    }
+
+    @JsonProperty("save_to_shock")
+    public Long getSaveToShock() {
+        return saveToShock;
+    }
+
+    @JsonProperty("save_to_shock")
+    public void setSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
+    }
+
+    public MediaObjectSelectionParams withSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
         return this;
     }
 
@@ -72,7 +90,7 @@ public class ModelObjectSelection {
 
     @Override
     public String toString() {
-        return ((((((("ModelObjectSelection"+" [workspaceName=")+ workspaceName)+", modelName=")+ modelName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("MediaObjectSelectionParams"+" [workspaceName=")+ workspaceName)+", mediaName=")+ mediaName)+", saveToShock=")+ saveToShock)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

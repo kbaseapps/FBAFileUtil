@@ -12,22 +12,27 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: PhenotypeObjectSelection</p>
- * 
+ * <p>Original spec-file type: FBAObjectSelectionParams</p>
+ * <pre>
+ * ****** FBA Result Converters ******
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "workspace_name",
-    "phenotype_name"
+    "fba_name",
+    "save_to_shock"
 })
-public class PhenotypeObjectSelection {
+public class FBAObjectSelectionParams {
 
     @JsonProperty("workspace_name")
     private String workspaceName;
-    @JsonProperty("phenotype_name")
-    private String phenotypeName;
+    @JsonProperty("fba_name")
+    private String fbaName;
+    @JsonProperty("save_to_shock")
+    private Long saveToShock;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("workspace_name")
@@ -40,23 +45,38 @@ public class PhenotypeObjectSelection {
         this.workspaceName = workspaceName;
     }
 
-    public PhenotypeObjectSelection withWorkspaceName(String workspaceName) {
+    public FBAObjectSelectionParams withWorkspaceName(String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
 
-    @JsonProperty("phenotype_name")
-    public String getPhenotypeName() {
-        return phenotypeName;
+    @JsonProperty("fba_name")
+    public String getFbaName() {
+        return fbaName;
     }
 
-    @JsonProperty("phenotype_name")
-    public void setPhenotypeName(String phenotypeName) {
-        this.phenotypeName = phenotypeName;
+    @JsonProperty("fba_name")
+    public void setFbaName(String fbaName) {
+        this.fbaName = fbaName;
     }
 
-    public PhenotypeObjectSelection withPhenotypeName(String phenotypeName) {
-        this.phenotypeName = phenotypeName;
+    public FBAObjectSelectionParams withFbaName(String fbaName) {
+        this.fbaName = fbaName;
+        return this;
+    }
+
+    @JsonProperty("save_to_shock")
+    public Long getSaveToShock() {
+        return saveToShock;
+    }
+
+    @JsonProperty("save_to_shock")
+    public void setSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
+    }
+
+    public FBAObjectSelectionParams withSaveToShock(Long saveToShock) {
+        this.saveToShock = saveToShock;
         return this;
     }
 
@@ -72,7 +92,7 @@ public class PhenotypeObjectSelection {
 
     @Override
     public String toString() {
-        return ((((((("PhenotypeObjectSelection"+" [workspaceName=")+ workspaceName)+", phenotypeName=")+ phenotypeName)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("FBAObjectSelectionParams"+" [workspaceName=")+ workspaceName)+", fbaName=")+ fbaName)+", saveToShock=")+ saveToShock)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
