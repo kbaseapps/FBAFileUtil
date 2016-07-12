@@ -9,6 +9,9 @@ implementation directly.
 Current Issues
 ================
 
+ - Not sure how biomass is passed into the file- the script takes a single string, the Narrative method takes
+   a list- probably we need to convert the list to a comma or semicolon separated string?
+
  - SBML validator cannot run, because it looks for a specific executable in the base image that does not exist
    and it is unclear how to get it.  For now, the sbml validator does not run.
 
