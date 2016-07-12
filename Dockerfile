@@ -32,6 +32,7 @@ COPY lib/wsClientPatch.pm /kb/deployment/lib/Bio/KBase/workspace/Client.pm
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod 777 /kb/module
+RUN ls -l /kb/module/lib
 
 WORKDIR /kb/module
 
