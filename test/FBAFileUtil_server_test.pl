@@ -45,7 +45,8 @@ sub test_model_import_export {
     my $retObj = $impl->excel_file_to_model({
                         model_name=>'excel_test_Rhodobacter.fbamdl', 
                         workspace_name=>get_ws_name(),
-                        model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xlsx'}
+                        model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xlsx'},
+                        biomass=>[]
                     });
     print('New Model Ref: '.$retObj->{'ref'}."\n");
 

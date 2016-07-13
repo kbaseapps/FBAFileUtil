@@ -258,6 +258,9 @@ sub excel_file_to_model
     my($return);
     #BEGIN excel_file_to_model
 
+    print('parameters:');
+    print(Dumper($p));
+
     # setup output scripts to call
     my $excelValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_Excel_FBAModel.pl';
     #my $uploadScript = $self->{'transform-plugin-path'}.'/scripts/upload/trns_transform_Excel_FBAModel_to_KBaseFBA_FBAModel.pl';
@@ -392,6 +395,8 @@ sub sbml_file_to_model
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN sbml_file_to_model
+    print('parameters:');
+    print(Dumper($p));
 
     # setup output scripts to call
     my $sbmlValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_SBML_FBAModel.py';
@@ -539,7 +544,9 @@ sub tsv_file_to_model
 
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
-    #BEGIN tsv_file_to_model
+    #BEGIN tsv_file_to_model    
+    print('parameters:');
+    print(Dumper($p));
 
     # setup output scripts to call
     my $tsvValidateScript = $self->{'transform-plugin-path'}.'/scripts/validate/trns_validate_TSV_FBAModel.pl';
@@ -668,6 +675,8 @@ sub model_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN model_to_excel_file
+    print('parameters:');
+    print(Dumper($model));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -780,6 +789,8 @@ sub model_to_sbml_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN model_to_sbml_file
+    print('parameters:');
+    print(Dumper($model));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -899,6 +910,8 @@ sub model_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($files);
     #BEGIN model_to_tsv_file
+    print('parameters:');
+    print(Dumper($model));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1025,6 +1038,8 @@ sub fba_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN fba_to_excel_file
+    print('parameters:');
+    print(Dumper($fba));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1140,6 +1155,8 @@ sub fba_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($files);
     #BEGIN fba_to_tsv_file
+    print('parameters:');
+    print(Dumper($fba));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1265,6 +1282,8 @@ sub tsv_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_media
+    print('parameters:');
+    print(Dumper($p));
 
     my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
 
@@ -1371,6 +1390,8 @@ sub excel_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN excel_file_to_media
+    print('parameters:');
+    print(Dumper($p));
 
     my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
 
@@ -1484,6 +1505,8 @@ sub media_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN media_to_tsv_file
+    print('parameters:');
+    print(Dumper($media));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1593,6 +1616,8 @@ sub media_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN media_to_excel_file
+    print('parameters:');
+    print(Dumper($media));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1706,6 +1731,8 @@ sub tsv_file_to_phenotype_set
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_phenotype_set
+    print('parameters:');
+    print(Dumper($p));
 
     my $phenotype_set_file_path = $self->get_file_path($p->{'phenotype_set_file'}, $self->{scratch});
 
@@ -1810,6 +1837,8 @@ sub phenotype_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_set_to_tsv_file
+    print('parameters:');
+    print(Dumper($phenotype_set));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -1919,6 +1948,8 @@ sub phenotype_simulation_set_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_excel_file
+    print('parameters:');
+    print(Dumper($pss));
 
     # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
@@ -2029,6 +2060,8 @@ sub phenotype_simulation_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_tsv_file
+    print('parameters:');
+    print(Dumper($pss));
 
         # TODO: better input error checking
     my $output_dir = $self->set_working_dir();
