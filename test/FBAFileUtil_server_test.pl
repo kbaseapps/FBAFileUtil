@@ -46,7 +46,7 @@ sub test_model_import_export {
                         model_name=>'excel_test_Rhodobacter.fbamdl', 
                         workspace_name=>get_ws_name(),
                         model_file=>{path=>'/kb/module/test/data/Sample_Model_Spreadsheet.xlsx'},
-                        biomass=>[]
+                        biomass=>undef
                     });
     print('New Model Ref: '.$retObj->{'ref'}."\n");
 
