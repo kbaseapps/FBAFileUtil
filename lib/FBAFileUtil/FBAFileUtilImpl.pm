@@ -284,7 +284,7 @@ sub excel_file_to_model
                     '--workspace_service_url', $self->{'workspace-url'},
                     '--fba_service_url', 'impl');
 
-    if(exists $p->{'genome'}) {
+    if(exists $p->{'genome'} && defined($p->{'genome'})) {
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
@@ -432,7 +432,7 @@ sub sbml_file_to_model
                     '--workspace_service_url', $self->{'workspace-url'},
                     '--fba_service_url', 'impl');
 
-    if(exists $p->{'genome'}) {
+    if(exists $p->{'genome'} && defined($p->{'genome'})) {
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
@@ -440,7 +440,8 @@ sub sbml_file_to_model
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
-    if(exists $p->{'compounds_file'}) {
+    if(exists $p->{'compounds_file'} && exists($p->{'compounds_file'}->{'ref'}) 
+        && defined($p->{'compounds_file'}->{'ref'}) && $p->{'compounds_file'}->{'ref'} ne '') {
         push @uploadArgs, '--compounds';
         my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
         push @uploadArgs, $compounds_file_path;
@@ -570,7 +571,7 @@ sub tsv_file_to_model
                     '--workspace_service_url', $self->{'workspace-url'},
                     '--fba_service_url', 'impl');
 
-    if(exists $p->{'genome'}) {
+    if(exists $p->{'genome'} && defined($p->{'genome'})) {
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
@@ -578,7 +579,8 @@ sub tsv_file_to_model
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
-    if(exists $p->{'compounds_file'}) {
+    if(exists $p->{'compounds_file'} && exists($p->{'compounds_file'}->{'ref'}) 
+        && defined($p->{'compounds_file'}->{'ref'}) && $p->{'compounds_file'}->{'ref'} ne '') {
         push @uploadArgs, '--compounds';
         my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
         push @uploadArgs, $compounds_file_path;
@@ -701,7 +703,7 @@ sub model_to_excel_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+    if(exists $model->{save_to_shock} &&  defined($model->{'save_to_shock'}) && $model->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -816,7 +818,7 @@ sub model_to_sbml_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+    if(exists $model->{save_to_shock} &&  defined($model->{'save_to_shock'})  && $model->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -939,7 +941,7 @@ sub model_to_tsv_file
     foreach my $f (@files_list) {
         if($f =~ m/FBAModelCompounds.tsv$/) {
             my $file_path = $output_dir . '/' . $f;
-            if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+            if(exists $model->{save_to_shock} &&  defined($model->{'save_to_shock'})  && $model->{save_to_shock}==1) {
                 $files->{compounds_file} = { shock_id => $self->load_to_shock($file_path) };
             } else {
                 $files->{compounds_file} = { path => $file_path };
@@ -947,7 +949,7 @@ sub model_to_tsv_file
         }
         if($f =~ m/FBAModelReactions.tsv$/) {
             my $file_path = $output_dir . '/' . $f;
-            if(exists $model->{save_to_shock} && $model->{save_to_shock}==1) {
+            if(exists $model->{save_to_shock} &&  defined($model->{'save_to_shock'})  && $model->{save_to_shock}==1) {
                 $files->{reactions_file} = { shock_id => $self->load_to_shock($file_path) };
             } else {
                 $files->{reactions_file} = { path => $file_path };
@@ -1061,7 +1063,7 @@ sub fba_to_excel_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+    if(exists $fba->{save_to_shock} &&  defined($fba->{'save_to_shock'})  && $fba->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -1181,7 +1183,7 @@ sub fba_to_tsv_file
     foreach my $f (@files_list) {
         if($f =~ m/FBACompounds.tsv$/) {
             my $file_path = $output_dir . '/' . $f;
-            if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+            if(exists $fba->{save_to_shock} &&  defined($fba->{'save_to_shock'}) && $fba->{save_to_shock}==1) {
                 $files->{compounds_file} = { shock_id =>  $self->load_to_shock($file_path) };
             } else {
                 $files->{compounds_file} = { path => $file_path };
@@ -1189,7 +1191,7 @@ sub fba_to_tsv_file
         }
         if($f =~ m/FBAReactions.tsv$/) {
             my $file_path = $output_dir . '/' . $f;
-            if(exists $fba->{save_to_shock} && $fba->{save_to_shock}==1) {
+            if(exists $fba->{save_to_shock} &&  defined($fba->{'save_to_shock'}) && $fba->{save_to_shock}==1) {
                 $files->{reactions_file} = { shock_id =>  $self->load_to_shock($file_path) };
             } else {
                 $files->{reactions_file} = { path => $file_path };
@@ -1528,7 +1530,7 @@ sub media_to_tsv_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $media->{save_to_shock} && $media->{save_to_shock}==1) {
+    if(exists $media->{save_to_shock} &&  defined($media->{save_to_shock})  && $media->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -1639,7 +1641,7 @@ sub media_to_excel_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $media->{save_to_shock} && $media->{save_to_shock}==1) {
+    if(exists $media->{save_to_shock} &&  defined($media->{save_to_shock}) && $media->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -1860,7 +1862,7 @@ sub phenotype_set_to_tsv_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $phenotype_set->{save_to_shock} && $phenotype_set->{save_to_shock}==1) {
+    if(exists $phenotype_set->{save_to_shock} && defined($phenotype_set->{save_to_shock}) && $phenotype_set->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -1971,7 +1973,7 @@ sub phenotype_simulation_set_to_excel_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $pss->{save_to_shock} && $pss->{save_to_shock}==1) {
+    if(exists $pss->{save_to_shock} && defined($pss->{save_to_shock}) && $pss->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
@@ -2083,7 +2085,7 @@ sub phenotype_simulation_set_to_tsv_file
         die 'Incorrect number of files was generated! Expected 1 file.';
     }
     my $file_path = $output_dir . '/' . $files[0];
-    if(exists $pss->{save_to_shock} && $pss->{save_to_shock}==1) {
+    if(exists $pss->{save_to_shock} && defined($pss->{save_to_shock}) && $pss->{save_to_shock}==1) {
         $f = { shock_id => $self->load_to_shock($file_path) };
     } else {
         $f = { path => $file_path };
