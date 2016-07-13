@@ -285,7 +285,7 @@ sub excel_file_to_model
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
-    if(exists $p->{'biomass'}) {
+    if(exists $p->{'biomass'} && scalar(@{$p->{'biomass'}})>0) {
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
@@ -431,7 +431,7 @@ sub sbml_file_to_model
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
-    if(exists $p->{'biomass'}) {
+    if(exists $p->{'biomass'} && scalar(@{$p->{'biomass'}})>0) {
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
@@ -567,7 +567,7 @@ sub tsv_file_to_model
         push @uploadArgs, '--genome';
         push @uploadArgs, $p->{'genome'};
     }
-    if(exists $p->{'biomass'}) {
+    if(exists $p->{'biomass'} && scalar(@{$p->{'biomass'}})>0) {
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
