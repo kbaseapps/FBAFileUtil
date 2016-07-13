@@ -392,7 +392,7 @@ eval {
     test_media_import_export();
 
     # comment out this test because it requires FBA available in WS
-    test_fba_export();
+    #test_fba_export();
 
     test_phenotype_set_import_export();
 

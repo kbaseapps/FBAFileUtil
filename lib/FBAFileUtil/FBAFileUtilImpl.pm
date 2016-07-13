@@ -117,7 +117,7 @@ sub get_file_path
                                 file_path=>$target_dir,
                                 unpack=>0
                             });
-        return $f->{node_file_name};
+        return $target_dir.'/'.$f->{node_file_name};
     }
 
     return $file->{path};
@@ -287,7 +287,7 @@ sub excel_file_to_model
     }
     if(exists $p->{'biomass'}) {
         push @uploadArgs, '--biomass';
-        push @uploadArgs, $p->{'biomass'};
+        push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
     # No compounds file allowed for excel files; data is in excel file
     #if(exists $p->{'compounds_file'}) {
@@ -433,7 +433,7 @@ sub sbml_file_to_model
     }
     if(exists $p->{'biomass'}) {
         push @uploadArgs, '--biomass';
-        push @uploadArgs, $p->{'biomass'};
+        push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
     if(exists $p->{'compounds_file'}) {
         push @uploadArgs, '--compounds';
@@ -569,7 +569,7 @@ sub tsv_file_to_model
     }
     if(exists $p->{'biomass'}) {
         push @uploadArgs, '--biomass';
-        push @uploadArgs, $p->{'biomass'};
+        push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
     if(exists $p->{'compounds_file'}) {
         push @uploadArgs, '--compounds';

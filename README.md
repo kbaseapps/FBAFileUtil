@@ -10,7 +10,10 @@ Current Issues
 ================
 
  - Not sure how biomass is passed into the file- the script takes a single string, the Narrative method takes
-   a list- probably we need to convert the list to a comma or semicolon separated string?
+   a list- probably we need to convert the list to a comma or semicolon separated string?  For now, it looks
+   like somewhere in the code it is split by semicolon, so we pass in a single string with elements delimited
+   by semicolons.  Related- in some places this seems to be required (method spec), but others (like printing
+   and running the actual script) it is optional.  For now, this was made optional in the method spec too.
 
  - SBML validator cannot run, because it looks for a specific executable in the base image that does not exist
    and it is unclear how to get it.  For now, the sbml validator does not run.
