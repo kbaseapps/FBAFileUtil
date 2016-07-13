@@ -80,7 +80,7 @@
           },
           {
               "input_parameter": "reactionFile",
-              "target_property": "model_file:shock_id"
+              "target_property": "model_file/shock_id"
           },
           {
               "input_parameter": "compoundFile",
