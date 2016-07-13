@@ -440,11 +440,21 @@ sub sbml_file_to_model
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
-    if(exists $p->{'compounds_file'} && exists($p->{'compounds_file'}->{'ref'}) 
-        && defined($p->{'compounds_file'}->{'ref'}) && $p->{'compounds_file'}->{'ref'} ne '') {
-        push @uploadArgs, '--compounds';
-        my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
-        push @uploadArgs, $compounds_file_path;
+    # annoying, but need to check that shock_id or path is defined and exists and is not empty
+    if(exists $p->{'compounds_file'} && defined($p->{'compounds_file'})) {
+        if(exists($p->{'compounds_file'}->{'shock_id'}) && defined($p->{'compounds_file'}->{'shock_id'}) &&
+            $p->{'compounds_file'}->{'shock_id'} ne '') {
+                push @uploadArgs, '--compounds';
+                my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+                push @uploadArgs, $compounds_file_path;
+        } else {
+            if(exists($p->{'compounds_file'}->{'path'}) && defined($p->{'compounds_file'}->{'path'}) &&
+                $p->{'compounds_file'}->{'path'} ne '') {
+                push @uploadArgs, '--compounds';
+                my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+                push @uploadArgs, $compounds_file_path;
+            }
+        }
     }
                     
     print("Running: @uploadArgs \n");
@@ -579,11 +589,20 @@ sub tsv_file_to_model
         push @uploadArgs, '--biomass';
         push @uploadArgs, join(';', @{$p->{'biomass'}} );
     }
-    if(exists $p->{'compounds_file'} && exists($p->{'compounds_file'}->{'ref'}) 
-        && defined($p->{'compounds_file'}->{'ref'}) && $p->{'compounds_file'}->{'ref'} ne '') {
-        push @uploadArgs, '--compounds';
-        my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
-        push @uploadArgs, $compounds_file_path;
+     if(exists $p->{'compounds_file'} && defined($p->{'compounds_file'})) {
+        if(exists($p->{'compounds_file'}->{'shock_id'}) && defined($p->{'compounds_file'}->{'shock_id'}) &&
+            $p->{'compounds_file'}->{'shock_id'} ne '') {
+                push @uploadArgs, '--compounds';
+                my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+                push @uploadArgs, $compounds_file_path;
+        } else {
+            if(exists($p->{'compounds_file'}->{'path'}) && defined($p->{'compounds_file'}->{'path'}) &&
+                $p->{'compounds_file'}->{'path'} ne '') {
+                push @uploadArgs, '--compounds';
+                my $compounds_file_path = $self->get_file_path($p->{'compounds_file'}, $self->{scratch});
+                push @uploadArgs, $compounds_file_path;
+            }
+        }
     }
                     
     print("Running: @uploadArgs \n");
