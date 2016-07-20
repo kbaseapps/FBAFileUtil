@@ -249,6 +249,57 @@ public class FBAFileUtilClient {
     }
 
     /**
+     * <p>Original spec-file function name: export_model_as_excel_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportModelAsExcelFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_model_as_tsv_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportModelAsTsvFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_model_as_sbml_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportModelAsSbmlFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_model_as_sbml_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
      * <p>Original spec-file function name: fba_to_excel_file</p>
      * <pre>
      * </pre>
@@ -279,6 +330,40 @@ public class FBAFileUtilClient {
         args.add(fba);
         TypeReference<List<FBATsvFiles>> retType = new TypeReference<List<FBATsvFiles>>() {};
         List<FBATsvFiles> res = caller.jsonrpcCall("FBAFileUtil.fba_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_fba_as_excel_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportFbaAsExcelFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_fba_as_tsv_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportFbaAsTsvFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_fba_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
@@ -351,6 +436,40 @@ public class FBAFileUtilClient {
     }
 
     /**
+     * <p>Original spec-file function name: export_media_as_excel_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportMediaAsExcelFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_media_as_tsv_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportMediaAsTsvFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_media_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
      * <p>Original spec-file function name: tsv_file_to_phenotype_set</p>
      * <pre>
      * </pre>
@@ -385,6 +504,23 @@ public class FBAFileUtilClient {
     }
 
     /**
+     * <p>Original spec-file function name: export_phenotype_set_as_tsv_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportPhenotypeSetAsTsvFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_set_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
      * <p>Original spec-file function name: phenotype_simulation_set_to_excel_file</p>
      * <pre>
      * </pre>
@@ -415,6 +551,40 @@ public class FBAFileUtilClient {
         args.add(pss);
         TypeReference<List<us.kbase.fbafileutil.File>> retType = new TypeReference<List<us.kbase.fbafileutil.File>>() {};
         List<us.kbase.fbafileutil.File> res = caller.jsonrpcCall("FBAFileUtil.phenotype_simulation_set_to_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_phenotype_simulation_set_as_excel_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportPhenotypeSimulationSetAsExcelFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_excel_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: export_phenotype_simulation_set_as_tsv_file</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link us.kbase.fbafileutil.ExportParams ExportParams}
+     * @return   parameter "output" of type {@link us.kbase.fbafileutil.ExportOutput ExportOutput}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ExportOutput exportPhenotypeSimulationSetAsTsvFile(ExportParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ExportOutput>> retType = new TypeReference<List<ExportOutput>>() {};
+        List<ExportOutput> res = caller.jsonrpcCall("FBAFileUtil.export_phenotype_simulation_set_as_tsv_file", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 }

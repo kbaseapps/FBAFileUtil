@@ -125,6 +125,42 @@ class FBAFileUtil(object):
             'FBAFileUtil.model_to_tsv_file',
             [model], self._service_ver, context)
 
+    def export_model_as_excel_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_model_as_excel_file',
+            [params], self._service_ver, context)
+
+    def export_model_as_tsv_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_model_as_tsv_file',
+            [params], self._service_ver, context)
+
+    def export_model_as_sbml_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_model_as_sbml_file',
+            [params], self._service_ver, context)
+
     def fba_to_excel_file(self, fba, context=None):
         """
         :param fba: instance of type "FBAObjectSelectionParams" (****** FBA
@@ -155,6 +191,30 @@ class FBAFileUtil(object):
         return self._client.call_method(
             'FBAFileUtil.fba_to_tsv_file',
             [fba], self._service_ver, context)
+
+    def export_fba_as_excel_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_fba_as_excel_file',
+            [params], self._service_ver, context)
+
+    def export_fba_as_tsv_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_fba_as_tsv_file',
+            [params], self._service_ver, context)
 
     def tsv_file_to_media(self, p, context=None):
         """
@@ -210,6 +270,30 @@ class FBAFileUtil(object):
             'FBAFileUtil.media_to_excel_file',
             [media], self._service_ver, context)
 
+    def export_media_as_excel_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_media_as_excel_file',
+            [params], self._service_ver, context)
+
+    def export_media_as_tsv_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_media_as_tsv_file',
+            [params], self._service_ver, context)
+
     def tsv_file_to_phenotype_set(self, p, context=None):
         """
         :param p: instance of type "PhenotypeSetCreationParams" (******
@@ -238,6 +322,18 @@ class FBAFileUtil(object):
         return self._client.call_method(
             'FBAFileUtil.phenotype_set_to_tsv_file',
             [phenotype_set], self._service_ver, context)
+
+    def export_phenotype_set_as_tsv_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_phenotype_set_as_tsv_file',
+            [params], self._service_ver, context)
 
     def phenotype_simulation_set_to_excel_file(self, pss, context=None):
         """
@@ -268,3 +364,27 @@ class FBAFileUtil(object):
         return self._client.call_method(
             'FBAFileUtil.phenotype_simulation_set_to_tsv_file',
             [pss], self._service_ver, context)
+
+    def export_phenotype_simulation_set_as_excel_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_phenotype_simulation_set_as_excel_file',
+            [params], self._service_ver, context)
+
+    def export_phenotype_simulation_set_as_tsv_file(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (input and output
+           structure functions for standard downloaders) -> structure:
+           parameter "input_ref" of String
+        :returns: instance of type "ExportOutput" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'FBAFileUtil.export_phenotype_simulation_set_as_tsv_file',
+            [params], self._service_ver, context)

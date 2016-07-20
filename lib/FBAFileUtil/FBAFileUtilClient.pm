@@ -727,6 +727,276 @@ File is a reference to a hash where the following keys are defined:
  
 
 
+=head2 export_model_as_excel_file
+
+  $output = $obj->export_model_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_model_as_excel_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_model_as_excel_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_model_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_model_as_excel_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_model_as_excel_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_model_as_excel_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_model_as_excel_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_model_as_excel_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_model_as_tsv_file
+
+  $output = $obj->export_model_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_model_as_tsv_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_model_as_tsv_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_model_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_model_as_tsv_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_model_as_tsv_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_model_as_tsv_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_model_as_tsv_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_model_as_tsv_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_model_as_sbml_file
+
+  $output = $obj->export_model_as_sbml_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_model_as_sbml_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_model_as_sbml_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_model_as_sbml_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_model_as_sbml_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_model_as_sbml_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_model_as_sbml_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_model_as_sbml_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_model_as_sbml_file',
+				       );
+    }
+}
+ 
+
+
 =head2 fba_to_excel_file
 
   $f = $obj->fba_to_excel_file($fba)
@@ -923,6 +1193,186 @@ File is a reference to a hash where the following keys are defined:
         Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method fba_to_tsv_file",
 					    status_line => $self->{client}->status_line,
 					    method_name => 'fba_to_tsv_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_fba_as_excel_file
+
+  $output = $obj->export_fba_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_fba_as_excel_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_fba_as_excel_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_fba_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_fba_as_excel_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_fba_as_excel_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_fba_as_excel_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_fba_as_excel_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_fba_as_excel_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_fba_as_tsv_file
+
+  $output = $obj->export_fba_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_fba_as_tsv_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_fba_as_tsv_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_fba_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_fba_as_tsv_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_fba_as_tsv_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_fba_as_tsv_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_fba_as_tsv_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_fba_as_tsv_file',
 				       );
     }
 }
@@ -1325,6 +1775,186 @@ File is a reference to a hash where the following keys are defined:
  
 
 
+=head2 export_media_as_excel_file
+
+  $output = $obj->export_media_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_media_as_excel_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_media_as_excel_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_media_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_media_as_excel_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_media_as_excel_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_media_as_excel_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_media_as_excel_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_media_as_excel_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_media_as_tsv_file
+
+  $output = $obj->export_media_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_media_as_tsv_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_media_as_tsv_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_media_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_media_as_tsv_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_media_as_tsv_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_media_as_tsv_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_media_as_tsv_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_media_as_tsv_file',
+				       );
+    }
+}
+ 
+
+
 =head2 tsv_file_to_phenotype_set
 
   $return = $obj->tsv_file_to_phenotype_set($p)
@@ -1525,6 +2155,96 @@ File is a reference to a hash where the following keys are defined:
  
 
 
+=head2 export_phenotype_set_as_tsv_file
+
+  $output = $obj->export_phenotype_set_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_phenotype_set_as_tsv_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_phenotype_set_as_tsv_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_phenotype_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_phenotype_set_as_tsv_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_phenotype_set_as_tsv_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_phenotype_set_as_tsv_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_phenotype_set_as_tsv_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_phenotype_set_as_tsv_file',
+				       );
+    }
+}
+ 
+
+
 =head2 phenotype_simulation_set_to_excel_file
 
   $f = $obj->phenotype_simulation_set_to_excel_file($pss)
@@ -1719,6 +2439,186 @@ File is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 export_phenotype_simulation_set_as_excel_file
+
+  $output = $obj->export_phenotype_simulation_set_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_phenotype_simulation_set_as_excel_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_phenotype_simulation_set_as_excel_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_phenotype_simulation_set_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_phenotype_simulation_set_as_excel_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_phenotype_simulation_set_as_excel_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_phenotype_simulation_set_as_excel_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_phenotype_simulation_set_as_excel_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_phenotype_simulation_set_as_excel_file',
+				       );
+    }
+}
+ 
+
+
+=head2 export_phenotype_simulation_set_as_tsv_file
+
+  $output = $obj->export_phenotype_simulation_set_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub export_phenotype_simulation_set_as_tsv_file
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function export_phenotype_simulation_set_as_tsv_file (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to export_phenotype_simulation_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'export_phenotype_simulation_set_as_tsv_file');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "FBAFileUtil.export_phenotype_simulation_set_as_tsv_file",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'export_phenotype_simulation_set_as_tsv_file',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method export_phenotype_simulation_set_as_tsv_file",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'export_phenotype_simulation_set_as_tsv_file',
+				       );
+    }
+}
+ 
   
 
 sub version {
@@ -1732,16 +2632,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'phenotype_simulation_set_to_tsv_file',
+                method_name => 'export_phenotype_simulation_set_as_tsv_file',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method phenotype_simulation_set_to_tsv_file",
+            error => "Error invoking method export_phenotype_simulation_set_as_tsv_file",
             status_line => $self->{client}->status_line,
-            method_name => 'phenotype_simulation_set_to_tsv_file',
+            method_name => 'export_phenotype_simulation_set_as_tsv_file',
         );
     }
 }
@@ -1864,6 +2764,71 @@ ref has a value which is a string
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ExportParams
+
+=over 4
+
+
+
+=item Description
+
+input and output structure functions for standard downloaders
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+input_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+input_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ExportOutput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+shock_id has a value which is a string
 
 
 =end text

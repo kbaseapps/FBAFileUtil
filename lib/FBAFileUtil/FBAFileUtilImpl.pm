@@ -5,7 +5,7 @@ use Bio::KBase::Exceptions;
 # http://semver.org 
 our $VERSION = "0.1.0";
 our $GIT_URL = "https://github.com/kbaseapps/FBAFileUtil";
-our $GIT_COMMIT_HASH = "164579c0b466a11ae7656dc5b5c752d7e8c8604c";
+our $GIT_COMMIT_HASH = "e6f4566b3dd1cbd0491f0f2e5e3271deec2b8fb4";
 
 =head1 NAME
 
@@ -19,6 +19,10 @@ FBAFileUtil
 
 #BEGIN_HEADER
 use Cwd;
+
+use File::Copy;
+use File::Basename;
+
 use Config::IniFiles;
 use Data::UUID;
 
@@ -258,7 +262,7 @@ sub excel_file_to_model
     my($return);
     #BEGIN excel_file_to_model
 
-    print('parameters:');
+    print('excel_file_to_model parameters:');
     print(Dumper($p));
 
     # setup output scripts to call
@@ -395,7 +399,7 @@ sub sbml_file_to_model
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN sbml_file_to_model
-    print('parameters:');
+    print('sbml_file_to_model parameters:');
     print(Dumper($p));
 
     # setup output scripts to call
@@ -556,7 +560,7 @@ sub tsv_file_to_model
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_model
-    print('parameters:');
+    print('tsv_file_to_model parameters:');
     print(Dumper($p));
 
     # setup output scripts to call
@@ -696,7 +700,7 @@ sub model_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN model_to_excel_file
-    print('parameters:');
+    print('model_to_excel_file parameters:');
     print(Dumper($model));
 
     # TODO: better input error checking
@@ -810,7 +814,7 @@ sub model_to_sbml_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN model_to_sbml_file
-    print('parameters:');
+    print('model_to_sbml_file parameters:');
     print(Dumper($model));
 
     # TODO: better input error checking
@@ -931,7 +935,7 @@ sub model_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($files);
     #BEGIN model_to_tsv_file
-    print('parameters:');
+    print('model_to_tsv_file parameters:');
     print(Dumper($model));
 
     # TODO: better input error checking
@@ -986,6 +990,341 @@ sub model_to_tsv_file
 							       method_name => 'model_to_tsv_file');
     }
     return($files);
+}
+
+
+
+
+=head2 export_model_as_excel_file
+
+  $output = $obj->export_model_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_model_as_excel_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_model_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_excel_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_model_as_excel_file
+
+    my $funcname = 'export_model_as_excel_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->model_to_excel_file({
+                                model_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    #END export_model_as_excel_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_model_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_excel_file');
+    }
+    return($output);
+}
+
+
+
+
+=head2 export_model_as_tsv_file
+
+  $output = $obj->export_model_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_model_as_tsv_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_model_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_tsv_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_model_as_tsv_file
+
+    my $funcname = 'export_model_as_tsv_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->model_to_tsv_file({
+                                model_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{reactions_file}->{path}, $export_dir.'/'.basename($files->{reactions_file}->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+    my $success = move($files->{compounds_file}->{path}, $export_dir.'/'.basename($files->{compounds_file}->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+
+    #END export_model_as_tsv_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_model_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_tsv_file');
+    }
+    return($output);
+}
+
+
+
+
+=head2 export_model_as_sbml_file
+
+  $output = $obj->export_model_as_sbml_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_model_as_sbml_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_model_as_sbml_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_sbml_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_model_as_sbml_file
+
+    my $funcname = 'export_model_as_sbml_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->model_to_sbml_file({
+                                model_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    #END export_model_as_sbml_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_model_as_sbml_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_model_as_sbml_file');
+    }
+    return($output);
 }
 
 
@@ -1059,7 +1398,7 @@ sub fba_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN fba_to_excel_file
-    print('parameters:');
+    print('fba_to_excel_file parameters:');
     print(Dumper($fba));
 
     # TODO: better input error checking
@@ -1176,7 +1515,7 @@ sub fba_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($files);
     #BEGIN fba_to_tsv_file
-    print('parameters:');
+    print('fba_to_tsv_file parameters:');
     print(Dumper($fba));
 
     # TODO: better input error checking
@@ -1228,6 +1567,230 @@ sub fba_to_tsv_file
 							       method_name => 'fba_to_tsv_file');
     }
     return($files);
+}
+
+
+
+
+=head2 export_fba_as_excel_file
+
+  $output = $obj->export_fba_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_fba_as_excel_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_fba_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_fba_as_excel_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_fba_as_excel_file
+
+    my $funcname = 'export_fba_as_excel_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->fba_to_excel_file({
+                                fba_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    #END export_fba_as_excel_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_fba_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_fba_as_excel_file');
+    }
+    return($output);
+}
+
+
+
+
+=head2 export_fba_as_tsv_file
+
+  $output = $obj->export_fba_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_fba_as_tsv_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_fba_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_fba_as_tsv_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_fba_as_tsv_file
+
+    my $funcname = 'export_fba_as_tsv_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->fba_to_tsv_file({
+                                fba_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{reactions_file}->{path}, $export_dir.'/'.basename($files->{reactions_file}->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+    my $success = move($files->{compounds_file}->{path}, $export_dir.'/'.basename($files->{compounds_file}->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+    
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    #END export_fba_as_tsv_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_fba_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_fba_as_tsv_file');
+    }
+    return($output);
 }
 
 
@@ -1303,7 +1866,7 @@ sub tsv_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_media
-    print('parameters:');
+    print('tsv_file_to_media parameters:');
     print(Dumper($p));
 
     my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
@@ -1411,7 +1974,7 @@ sub excel_file_to_media
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN excel_file_to_media
-    print('parameters:');
+    print('excel_file_to_media parameters:');
     print(Dumper($p));
 
     my $media_file_path = $self->get_file_path($p->{'media_file'}, $self->{scratch});
@@ -1526,7 +2089,7 @@ sub media_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN media_to_tsv_file
-    print('parameters:');
+    print('media_to_tsv_file parameters:');
     print(Dumper($media));
 
     # TODO: better input error checking
@@ -1637,7 +2200,7 @@ sub media_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN media_to_excel_file
-    print('parameters:');
+    print('media_to_excel_file parameters:');
     print(Dumper($media));
 
     # TODO: better input error checking
@@ -1675,6 +2238,227 @@ sub media_to_excel_file
 							       method_name => 'media_to_excel_file');
     }
     return($f);
+}
+
+
+
+
+=head2 export_media_as_excel_file
+
+  $output = $obj->export_media_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_media_as_excel_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_media_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_media_as_excel_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_media_as_excel_file
+
+    my $funcname = 'export_media_as_excel_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->media_to_excel_file({
+                                media_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+
+    #END export_media_as_excel_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_media_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_media_as_excel_file');
+    }
+    return($output);
+}
+
+
+
+
+=head2 export_media_as_tsv_file
+
+  $output = $obj->export_media_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_media_as_tsv_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_media_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_media_as_tsv_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_media_as_tsv_file
+
+    my $funcname = 'export_media_as_tsv_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->media_to_tsv_file({
+                                media_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    #END export_media_as_tsv_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_media_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_media_as_tsv_file');
+    }
+    return($output);
 }
 
 
@@ -1752,7 +2536,7 @@ sub tsv_file_to_phenotype_set
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($return);
     #BEGIN tsv_file_to_phenotype_set
-    print('parameters:');
+    print('tsv_file_to_phenotype_set parameters:');
     print(Dumper($p));
 
     my $phenotype_set_file_path = $self->get_file_path($p->{'phenotype_set_file'}, $self->{scratch});
@@ -1858,7 +2642,7 @@ sub phenotype_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_set_to_tsv_file
-    print('parameters:');
+    print('phenotype_set_to_tsv_file parameters:');
     print(Dumper($phenotype_set));
 
     # TODO: better input error checking
@@ -1896,6 +2680,117 @@ sub phenotype_set_to_tsv_file
 							       method_name => 'phenotype_set_to_tsv_file');
     }
     return($f);
+}
+
+
+
+
+=head2 export_phenotype_set_as_tsv_file
+
+  $output = $obj->export_phenotype_set_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_phenotype_set_as_tsv_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_phenotype_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_set_as_tsv_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_phenotype_set_as_tsv_file
+
+    my $funcname = 'export_phenotype_set_as_tsv_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->phenotype_set_to_tsv_file({
+                                phenotype_set_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+
+    #END export_phenotype_set_as_tsv_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_phenotype_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_set_as_tsv_file');
+    }
+    return($output);
 }
 
 
@@ -1969,7 +2864,7 @@ sub phenotype_simulation_set_to_excel_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_excel_file
-    print('parameters:');
+    print('phenotype_simulation_set_to_excel_file parameters:');
     print(Dumper($pss));
 
     # TODO: better input error checking
@@ -2081,7 +2976,7 @@ sub phenotype_simulation_set_to_tsv_file
     my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
     my($f);
     #BEGIN phenotype_simulation_set_to_tsv_file
-    print('parameters:');
+    print('phenotype_simulation_set_to_tsv_file parameters:');
     print(Dumper($pss));
 
         # TODO: better input error checking
@@ -2120,6 +3015,228 @@ sub phenotype_simulation_set_to_tsv_file
 							       method_name => 'phenotype_simulation_set_to_tsv_file');
     }
     return($f);
+}
+
+
+
+
+=head2 export_phenotype_simulation_set_as_excel_file
+
+  $output = $obj->export_phenotype_simulation_set_as_excel_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_phenotype_simulation_set_as_excel_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_phenotype_simulation_set_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_simulation_set_as_excel_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_phenotype_simulation_set_as_excel_file
+
+    my $funcname = 'export_phenotype_simulation_set_as_excel_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->phenotype_simulation_set_to_excel_file({
+                                phenotype_simulation_set_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+
+    #END export_phenotype_simulation_set_as_excel_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_phenotype_simulation_set_as_excel_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_simulation_set_as_excel_file');
+    }
+    return($output);
+}
+
+
+
+
+=head2 export_phenotype_simulation_set_as_tsv_file
+
+  $output = $obj->export_phenotype_simulation_set_as_tsv_file($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a FBAFileUtil.ExportParams
+$output is a FBAFileUtil.ExportOutput
+ExportParams is a reference to a hash where the following keys are defined:
+	input_ref has a value which is a string
+ExportOutput is a reference to a hash where the following keys are defined:
+	shock_id has a value which is a string
+
+
+=end text
+
+
+
+=item Description
+
+
+
+=back
+
+=cut
+
+sub export_phenotype_simulation_set_as_tsv_file
+{
+    my $self = shift;
+    my($params) = @_;
+
+    my @_bad_arguments;
+    (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument \"params\" (value was \"$params\")");
+    if (@_bad_arguments) {
+	my $msg = "Invalid arguments passed to export_phenotype_simulation_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_simulation_set_as_tsv_file');
+    }
+
+    my $ctx = $FBAFileUtil::FBAFileUtilServer::CallContext;
+    my($output);
+    #BEGIN export_phenotype_simulation_set_as_tsv_file
+
+    my $funcname = 'export_phenotype_simulation_set_as_tsv_file';
+    print("$funcname parameters:");
+    print(Dumper($params));
+
+    # validate parameters
+    if(!exists($params->{input_ref}) ||  !defined($params->{input_ref})) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'input_ref required field was not defined', method_name => $funcname);
+    }
+
+    # get WS metadata to get ws_name and obj_name
+    my $ws = new Bio::KBase::workspace::Client($self->{'workspace-url'});
+    my $info = $ws->get_object_info_new({ objects=>[ { ref=>$params->{input_ref} } ] })->[0];
+
+    # export to a file using existing function
+    my $files = $self->phenotype_simulation_set_to_tsv_file({
+                                phenotype_simulation_set_name=> $info->[1],
+                                workspace_name=> $info->[7]
+                            });
+
+    # create the output directory and move the file there
+    my $export_dir = $self->{'scratch'}.'/'.$info->[1];
+    mkdir $export_dir;
+    my $success = move($files->{path}, $export_dir.'/'.basename($files->{path}));
+    if(!$success) {
+        Bio::KBase::Exceptions::ArgumentValidationError->throw(error => 'could not move files to export dir: '.$export_dir,method_name => $funcname);
+    }
+
+    # package it up and be done
+    my $dataUtil = DataFileUtil::DataFileUtilClient->new($self->{callbackURL});
+    my $package_details = $dataUtil->package_for_download({ 
+                                        file_path => $export_dir,
+                                        ws_refs   => [ $params->{input_ref} ]
+                                    });
+    $output = { shock_id => $package_details->{shock_id} };
+
+    
+    #END export_phenotype_simulation_set_as_tsv_file
+    my @_bad_returns;
+    (ref($output) eq 'HASH') or push(@_bad_returns, "Invalid type for return variable \"output\" (value was \"$output\")");
+    if (@_bad_returns) {
+	my $msg = "Invalid returns passed to export_phenotype_simulation_set_as_tsv_file:\n" . join("", map { "\t$_\n" } @_bad_returns);
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+							       method_name => 'export_phenotype_simulation_set_as_tsv_file');
+    }
+    return($output);
 }
 
 
@@ -2254,6 +3371,71 @@ ref has a value which is a string
 
 a reference to a hash where the following keys are defined:
 ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ExportParams
+
+=over 4
+
+
+
+=item Description
+
+input and output structure functions for standard downloaders
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+input_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+input_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ExportOutput
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+shock_id has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+shock_id has a value which is a string
 
 
 =end text

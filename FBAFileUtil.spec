@@ -18,6 +18,16 @@ module FBAFileUtil {
     } WorkspaceRef;
 
 
+    /*  input and output structure functions for standard downloaders */
+    typedef structure {
+        string input_ref;
+    } ExportParams;
+
+    typedef structure {
+        string shock_id;
+    } ExportOutput;
+
+
     /****** FBA Model Converters ********/
 
     /* compounds_file is not used for excel file creations */
@@ -53,6 +63,9 @@ module FBAFileUtil {
     } ModelTsvFiles;
     funcdef model_to_tsv_file(ModelObjectSelectionParams model) returns(ModelTsvFiles files) authentication required;
 
+    funcdef export_model_as_excel_file(ExportParams params) returns (ExportOutput output) authentication required;
+    funcdef export_model_as_tsv_file(ExportParams params) returns (ExportOutput output) authentication required;
+    funcdef export_model_as_sbml_file(ExportParams params) returns (ExportOutput output) authentication required;
 
 
 
@@ -72,7 +85,9 @@ module FBAFileUtil {
     } FBATsvFiles;
     funcdef fba_to_tsv_file(FBAObjectSelectionParams fba) returns(FBATsvFiles files) authentication required;
 
-
+    funcdef export_fba_as_excel_file(ExportParams params) returns (ExportOutput output) authentication required;
+    funcdef export_fba_as_tsv_file(ExportParams params) returns (ExportOutput output) authentication required;
+   
 
     /******* Media Converters **********/
 
@@ -95,6 +110,9 @@ module FBAFileUtil {
     funcdef media_to_tsv_file(MediaObjectSelectionParams media) returns(File f) authentication required;
     funcdef media_to_excel_file(MediaObjectSelectionParams media) returns(File f) authentication required;
 
+    funcdef export_media_as_excel_file(ExportParams params) returns (ExportOutput output) authentication required;
+    funcdef export_media_as_tsv_file(ExportParams params) returns (ExportOutput output) authentication required;
+   
 
     /******* Phenotype Data Converters ********/
 
@@ -115,6 +133,9 @@ module FBAFileUtil {
 
     funcdef phenotype_set_to_tsv_file(PhenotypeSetObjectSelectionParams phenotype_set) returns (File f) authentication required;
 
+    funcdef export_phenotype_set_as_tsv_file(ExportParams params) returns (ExportOutput output) authentication required;
+    
+
     typedef structure {
         string workspace_name;
         string phenotype_simulation_set_name;
@@ -123,6 +144,10 @@ module FBAFileUtil {
 
     funcdef phenotype_simulation_set_to_excel_file(PhenotypeSimulationSetObjectSelectionParams pss) returns (File f) authentication required;
     funcdef phenotype_simulation_set_to_tsv_file(PhenotypeSimulationSetObjectSelectionParams pss) returns (File f) authentication required;
+
+    funcdef export_phenotype_simulation_set_as_excel_file(ExportParams params) returns (ExportOutput output) authentication required;
+    funcdef export_phenotype_simulation_set_as_tsv_file(ExportParams params) returns (ExportOutput output) authentication required;
+    
 
 
 };
