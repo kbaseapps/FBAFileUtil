@@ -435,14 +435,14 @@ sub test_phenotype_simulation_set_export {
 #######  actually run the tests here
 eval {
 
-    #test_model_import_export();
+    test_model_import_export();
 
-    #test_media_import_export();
+    test_media_import_export();
 
     # comment out this test because it requires FBA available in WS
     #test_fba_export();
 
-    #test_phenotype_set_import_export();
+    test_phenotype_set_import_export();
 
     test_phenotype_simulation_set_export();
 
