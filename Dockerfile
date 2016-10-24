@@ -16,8 +16,8 @@ RUN mkdir -p /kb/module && cd /kb/module && git clone https://github.com/kbase/t
 # the fba makefile expects it to be in the root bin directory!!
 RUN cd /kb/dev_container/modules && \
     rm -rf KBaseFBAModeling && \
-    git clone https://github.com/kbase/KBaseFBAModeling && cd KBaseFBAModeling && \
-    git checkout 1f09343 && \
+    git clone https://github.com/msneddon/KBaseFBAModeling && cd KBaseFBAModeling && \
+    git checkout c8b2a0f && \
     cp /kb/runtime/bin/pod2html /bin/. && \
     make deploy TARGET=/kb/deployment KB_TOP=/kb/dev_container
 
