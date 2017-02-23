@@ -1,6 +1,6 @@
 name     : FBA MODEL FROM SBML FILE
 subtitle : none
-tooltip  : Upload a Flux Balance Analysis Model from SBML file into your Narrative.
+tooltip  : Upload a Flux Balance Analysis Model from SBML file
 
 screenshots :
     []
@@ -15,27 +15,27 @@ parameters :
     reactionFile :
         ui-name : SBML FILE
         short-hint : File with model in SBML format
-        long-hint  : File with model in SBML format
+        long-hint  : File with model in SBML format (file extension .sbml or .xml)
 
     compoundFile :
         ui-name : COMPOUNDS TSV FILE
         short-hint : File with compounds in TSV format
-        long-hint  : File with compounds in TSV format
+        long-hint  : File with compounds in TSV format (file extension .tsv)
 
     outputObject :
         ui-name : NAME OF FBA MODEL
-        short-hint : Provide the name for the Flux Balance Analysis Model object that will be created by this upload
-        long-hint  : Provide the name for the Flux Balance Analysis Model object that will be created by this upload
+        short-hint : Provide a name for the FBA Model object that will be created by this upload
+        long-hint  : Provide a name for the Flux Balance Analysis Model object that will be created by this upload
 
     genomeObject :
         ui-name : GENOME
-        short-hint : Select the Genome object that contains features referenced by the FBAModel
-        long-hint  : Select the Genome object that contains features referenced by the FBAModel
+        short-hint : Select the Genome object that contains features referenced by the FBA Model
+        long-hint  : Select the Genome object that contains features referenced by the FBA Model
 
     biomass :
         ui-name : BIOMASS
-        short-hint : Provide the biomass reaction identifier in SBML file
-        long-hint  : Provide the biomass reaction identifier in SBML file
+        short-hint : Biomass reaction identifier in SBML file
+        long-hint  : Biomass reaction identifier in SBML file (don't include "R_" prefix)
 
 description : none
 
