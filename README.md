@@ -9,7 +9,7 @@ implementation directly.
 | Branch  | Build                                                              | Coverage                                                                         | LGTM Alerts                                                     |
 | ------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | master  | [![Build Status](https://travis-ci.org/kbaseapps/FBAFileUtil.svg?branch=master)](https://travis-ci.org/kbaseapps/FBAFileUtil)  | [![Coverage Status](https://coveralls.io/repos/github/kbaseapps/FBAFileUtil/badge.svg?branch=master)](https://coveralls.io/github/kbaseapps/FBAFileUtil?branch=master)  | [![Total alerts](https://img.shields.io/lgtm/alerts/g/kbaseapps/FBAFileUtil.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kbaseapps/FBAFileUtil/alerts/)  |
----
+
 
 ## Current Issues
 
