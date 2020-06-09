@@ -1,17 +1,22 @@
 # FBAFileUtil
-Ported over scripts from Transform to work as SDK modules and deconstructed to allow SDK Data <-> File methods
-for SDK developers.  Previously those scripts called the FBA service, but now call a local FBA service code
-implementation directly.
+Ported over scripts from Transform to work as SDK modules and deconstructed to allow SDK Data <-> File methods for SDK developers.  
+
+Previously those scripts called the FBA service, but now call a local FBA service code implementation directly.
 
 
 ## Current Status
 
 | Branch  | Build                                                              | Coverage                                                                         | LGTM Alerts                                                     |
 | ------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| master  | [![Build Status](https://travis-ci.org/kbaseapps/FBAFileUtil.svg?branch=master)](https://travis-ci.org/kbaseapps/FBAFileUtil)  | [![Coverage Status](https://coveralls.io/repos/github/kbaseapps/FBAFileUtil/badge.svg?branch=master)](https://coveralls.io/github/kbaseapps/FBAFileUtil?branch=master)  | [![Total alerts](https://img.shields.io/lgtm/alerts/g/kbaseapps/FBAFileUtil.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kbaseapps/FBAFileUtil/alerts/)  |
+| master  | [![KBase SDK Tests](https://github.com/kbaseapps/FBAFileUtil/workflows/KBase%20SDK%20Tests/badge.svg)](https://github.com/kbaseapps/FBAFileUtil/actions?query=workflow%3A%22KBase+SDK+Tests%22)  | [![codecov](https://codecov.io/gh/kbaseapps/FBAFileUtil/branch/master/graph/badge.svg)](https://codecov.io/gh/kbaseapps/FBAFileUtil)  | [![Total alerts](https://img.shields.io/lgtm/alerts/g/kbaseapps/FBAFileUtil.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kbaseapps/FBAFileUtil/alerts/)  |
 
 
-## Current Issues
+
+
+## Details
+
+
+### Current Issues
 
  - Not sure how biomass is passed into the file- the script takes a single string, the Narrative method takes
    a list- probably we need to convert the list to a comma or semicolon separated string?  For now, it looks
